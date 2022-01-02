@@ -18,7 +18,7 @@ public class Plan extends Item {
 	private String address;
 	
 	@Enumerated(EnumType.STRING)
-	private Region region;
+	private Region region; 
 	
 	public Plan() {
 		

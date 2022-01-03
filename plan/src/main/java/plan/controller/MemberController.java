@@ -15,14 +15,14 @@ import plan.domain.member.Member;
 import plan.service.MemberService;
 
 @Controller
-public class UserController {
+public class MemberController {
 	
 	@Autowired
 	private MemberService ms;
 	
 	@RequestMapping("/signin.do")
 	public String signin(HttpSession session) {
-		session.setAttribute("header", "user");
+		session.setAttribute("header", "member");
 		return "user/signin";
 	}	
 	
@@ -42,7 +42,7 @@ public class UserController {
 	
 	@RequestMapping("/signup.do")
 	public String signup(HttpSession session) {
-		session.setAttribute("header", "user");
+		session.setAttribute("header", "member");
 		return "user/signup";
 	}
 	
@@ -53,6 +53,7 @@ public class UserController {
 	}
 	
 	@RequestMapping("/signout.do")
+	@ResponseBody
 	public String signout(HttpServletRequest req, HttpServletResponse res) {
 		ms.removeSigninCookie(req, res);
 		req.getSession().invalidate();

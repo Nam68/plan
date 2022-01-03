@@ -11,8 +11,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<link href="css/header.css" rel="stylesheet">
-<link href="css/album.css" rel="stylesheet">
+<link href="/plan/css/header.css" rel="stylesheet">
+<link href="/plan/css/album.css" rel="stylesheet">
 </head>
 <script>
 function initPage() { //페이지 초기화시 실행 (실행 코드는 헤더에 있음)
@@ -41,7 +41,7 @@ function initPage() { //페이지 초기화시 실행 (실행 코드는 헤더�
 /* 
  * 컨텐츠 모달창을 출력하기 위한 메서드 
  */
-function memoryImgCode(img, count) { //모달창에 들어갈 이미지 추가 코드 (count는 이미지의 순서)
+function albumImgCode(img, count) { //모달창에 들어갈 이미지 추가 코드 (count는 이미지의 순서)
 	var carouselClass = '';
 	if(count==0) {
 		carouselClass = 'carousel-item active'; //첫 번째 이미지에는 active 클래스를 부여해야 함
@@ -54,41 +54,41 @@ function memoryImgCode(img, count) { //모달창에 들어갈 이미지 추가 �
 		'</div>';
 	return code;
 }
-function memoryEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이미지를 출력하는 코드
+function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이미지를 출력하는 코드
 	var code = 
 		'<div class="carousel-item active">'+
 			'<img src="http://myyk.co.kr/img/noimage.jpg" class="d-block w-100" width="400" height="300" alt="...">'+
 		'</div>';
 	return code;
 }
-function memoryContentIdx(idx) { //모달창이 현재 어떤 idx로 컨텐츠를 띄우고 있는지 hidden으로 저장(컨텐츠 변경 시 사용)
-	var code = '<input type="hidden" id="memoryContentIdx" value="'+idx+'">';
+function albumContentIdx(idx) { //모달창이 현재 어떤 idx로 컨텐츠를 띄우고 있는지 hidden으로 저장(컨텐츠 변경 시 사용)
+	var code = '<input type="hidden" id="albumContentIdx" value="'+idx+'">';
 	return code;
 }
-function memoryContentFooter() { //컨텐츠를 띄울 때 버튼창
-	var permit = ${sessionScope.userDTO.permit};
+function albumContentFooter() { //컨텐츠를 띄울 때 버튼창
+	var role = '${sessionScope.member.roleType}';
 	var code = '';
-	if(permit == 2) {
-		code += '<button type="button" class="btn btn-outline-danger memoryContentDelete">Delete</button>'+
-		'<button type="button" class="btn btn-outline-success memoryContentUpdate">Update</button>'+
+	if(role == 'ADMIN') {
+		code += '<button type="button" class="btn btn-outline-danger albumContentDelete">Delete</button>'+
+		'<button type="button" class="btn btn-outline-success albumContentUpdate">Update</button>'+
 		'<script>'+
-			'$(\'.memoryContentDelete\').on(\'click\', function() {'+
-				'memoryContentDelete();'+ //딜리트 버튼을 클릭하면 해당 메서드 수행
+			'$(\'.albumContentDelete\').on(\'click\', function() {'+
+				'albumContentDelete();'+ //딜리트 버튼을 클릭하면 해당 메서드 수행
 			'});'+
-			'$(\'.memoryContentUpdate\').on(\'click\', function() {'+
-				'memoryContentUpdate();'+ //업데이트 버튼을 클릭하면 해당 메서드 수행
+			'$(\'.albumContentUpdate\').on(\'click\', function() {'+
+				'albumContentUpdate();'+ //업데이트 버튼을 클릭하면 해당 메서드 수행
 			'});'+
 		'<\/script>';
 	}
-		code += '<button type="button" class="btn btn-secondary memoryContentModalClose" data-bs-dismiss="modal">Close</button>';
-	return code+memoryFooterScript();
+		code += '<button type="button" class="btn btn-secondary albumContentModalClose" data-bs-dismiss="modal">Close</button>';
+	return code+albumFooterScript();
 }
-function memoryFooterScript() { //닫기 버튼을 클릭했을 때 모달창을 초기화해주는 코드
+function albumFooterScript() { //닫기 버튼을 클릭했을 때 모달창을 초기화해주는 코드
 	var code = 
 		'<script>'+
-			'$(\'.memoryContentModalClose\').on(\'click\', function() {'+
-				'$(\'#memoryContentModalLabel\').html(\'\');'+
-				'$(\'#memory-carousel-inner\').html(\'\');'+
+			'$(\'.albumContentModalClose\').on(\'click\', function() {'+
+				'$(\'#albumContentModalLabel\').html(\'\');'+
+				'$(\'#album-carousel-inner\').html(\'\');'+
 			'});'+
 		'<\/script>';
 	return code;
@@ -98,16 +98,16 @@ function memoryFooterScript() { //닫기 버튼을 클릭했을 때 모달창을
 /*
  * 컨텐츠 업데이트/삭제 관련 메서드
  */
-function memoryContentDelete() { //컨텐츠 삭제 스크립트(javascript로 버튼을 추가하기 때문에 따로 빼놓음)
-	var idx = $('#memoryContentIdx').val();
+function albumContentDelete() { //컨텐츠 삭제 스크립트(javascript로 버튼을 추가하기 때문에 따로 빼놓음)
+	var idx = $('#albumContentIdx').val();
 	if(window.confirm('削除すると復元できません！\n削除しますか？')) {
 		$.ajax({
-			url: 'memoryDelete.do',
+			url: 'albumDelete.do',
 			data: {idx: idx},
 			success: function(data) {
 				if(data > 0) {
 					window.alert('削除しました');
-					location.href='memoryList.do';
+					location.href='albumList.do';
 				} else {
 					window.alert('削除に失敗しました\n管理者にお問い合わせください');
 				}
@@ -118,19 +118,19 @@ function memoryContentDelete() { //컨텐츠 삭제 스크립트(javascript로 �
 		});
 	}
 }
-function memoryContentUpdate() { //컨텐츠 업데이트 스크립트(javascript로 버튼을 추가하기 때문에 따로 빼놓음)
-	var idx = $('#memoryContentIdx').val();
+function albumContentUpdate() { //컨텐츠 업데이트 스크립트(javascript로 버튼을 추가하기 때문에 따로 빼놓음)
+	var idx = $('#albumContentIdx').val();
 	$.ajax({ //이미지 파일을 temp폴더에 올려놓기 위한 작업
-		url: 'memoryUpdate.do',
+		url: 'albumUpdate.do',
 		method: 'GET',
 		data: {idx: idx},
 		success: function(data) {
 			if(data > 0) { //성공적으로 temp파일에 복사가 된 경우 실행
-				$('#memoryUpdateModalLabel').val($('#memoryContentModalLabel').html());
-				$('#update-carousel-inner').html($('#memory-carousel-inner').html());
-				$('#update-carousel-inner').append(memoryAddButton());
-				$('#memoryUpdateContentTextarea').html($('#memoryContent').html());
-				$('#memoryUpdateModalOn').trigger('click');	
+				$('#albumUpdateModalLabel').val($('#albumContentModalLabel').html());
+				$('#update-carousel-inner').html($('#album-carousel-inner').html());
+				$('#update-carousel-inner').append(albumAddButton());
+				$('#albumUpdateContentTextarea').html($('#albumContent').html());
+				$('#albumUpdateModalOn').trigger('click');	
 			} else { //temp파일에 복사가 되지 않은 경우 -1이 출력됨
 				window.alert('request failed!');
 			}
@@ -140,108 +140,6 @@ function memoryContentUpdate() { //컨텐츠 업데이트 스크립트(javascrip
     	window.alert('request failed!');
     });
 }
-
-
-/*
-* 컨텐츠를 추가하는 기능에 대한 메서드
-*/
-var startdate;
-var enddate;
-function memoryAddCode() { //이미지 삽입 버튼이 들어가기 위한 carousel 틀을 반환
-	var code = 
-	'<div class="carousel-item active" role="button" id="addMemoryButton">'+
-		'<svg role="button" id="addMemoryButtonTest" class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="400" height="300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: First slide" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#777"/><text x="50%" y="50%" fill="#555" dy=".3em">Image</text></svg>'+
-		'<div class="carousel-caption d-none d-md-block">'+
-			'<h5>Click Here To Add Picture</h5>'+
-	        '<p>Let\'s add pictures and comments of our memory!</p>'+
-		'</div>'+
-	'</div>'+
-	'<script>'+
-		'$(\'#addMemoryButton\').on(\'click\', function() {'+
-			'$(\'#addImageInput\').trigger(\'click\');'+
-		'});'+
-	'<\/script>';
-	return code;
-}
-function memoryAddButton() { //이미지 삽입 버튼 코드를 반환
-	var code = 
-		'<div class="carousel-item">'+
-			'<img role="button" id="addMemoryButtonTest" src="http://myyk.co.kr/img/plus.jpg" class="d-block w-100" width="400" height="300" alt="...">'+
-		'</div>'+
-		'<script>'+
-			'$(\'#addMemoryButtonTest\').on(\'click\', function() {'+
-				'$(\'#addImageInput\').trigger(\'click\');'+
-			'});'+
-		'<\/script>';
-	return code;
-}
-function memoryAddFooter() { //컨텐츠를 추가하는 버튼을 클릭했을 때의 footer
-	var code = 
-		'<button type="button" id="memoryAddSubmitButton" class="btn btn-primary">Submit</button>'+
-		'<button type="button" class="btn btn-secondary memoryContentModalClose" data-bs-dismiss="modal">Close</button>'+
-		'<script>'+
-			'$(\'#memoryAddSubmitButton\').on(\'click\', function() {'+
-				'memoryAddSubmit();'+
-			'});'+
-		'<\/script>';
-	return code+memoryFooterScript();
-}
-function memoryAddSubmit() { //컨텐츠를 추가하는 Submit 기능을 실제로 수행하는 메서드
-	var title = $('#memoryAddTitle').val();
-	var content = $('#memoryAddContent').val();
-	var place = $('#memoryAddPlace').val();
-	var imgsLength = $('#memory-carousel-inner').find('img').length;
-
-	//입력이 전부 되어 있는지 확인
-	if(title == '' || content == '' || startdate == null || place == 'Select City' || imgsLength == 0) {
-		window.alert('全ての情報を入力してください');
-		return;
-	}
-	
-	var form = $('<form></form>');
-	form.attr('action', 'index.do');
-	
-	form.append($('<input/>'), {type: 'hidden', name: 'title', value: title});
-	form.append($('<input/>'), {type: 'hidden', name: 'content', value: content});
-	form.append($('<input/>'), {type: 'hidden', name: 'place', value: place});
-	form.append($('<input/>'), {type: 'hidden', name: 'stardate', value: startdate});
-	form.append($('<input/>'), {type: 'hidden', name: 'enddate', value: enddate});
-	
-	form.appendTo('body');
-	form.submit();
-}
-function memoryAddTitleGroup() {
-	var code =
-		'<div class="row g-3 fs-5 fw-normal">'+
-			'<div class="col-auto">'+
-				'<input type="text" class="form-control" id="memoryAddTitle" placeholder="Write Title...">'+
-			'</div>'+
-			'<div class="col-auto">'+
-				'<select id="memoryAddPlace" class="form-select" aria-label="Default select example">'+			    	
-					'<option selected>Select City</option>'+
-					'<option value="1">One</option>'+
-					'<option value="2">Two</option>'+
-					'<option value="3">Three</option>'+
-				'</select>'+
-			'</div>'+
-			'<div class="col-auto">'+
-				'<input id="memoryAddDate" class="flatpickr" type="text" placeholder="Select Date.." data-id="range">'+
-				'<script>'+
-					'$(".flatpickr").flatpickr('+
-						'{'+
-							'mode: "range",'+
-							'dateFormat: "Y-m-d",'+
-							'onClose: function(selectedDates, dateStr, instance) {'+
-    							'startdate = selectedDates[0];'+
-    							'enddate = selectedDates[1];'+
-							'}'+				
-						'}'+
-					');'+
-				'<\/script>'
-			'</div>'+
-		'</div>';		
-	return code;
-}
 </script>
 <body>
 <%@ include file="/WEB-INF/views/header.jsp" %>
@@ -249,25 +147,24 @@ function memoryAddTitleGroup() {
   <div class="px-4 py-5 my-5 text-center">
     <h1 class="display-5 fw-bold">Memory</h1>
     <hr>
-    <c:if test="${sessionScope.userDTO.permit==2 }">
+    
+    <!-- 관리자 계정인 경우 추가 버튼 생성 -->
+    <c:if test="${sessionScope.member.roleType=='ADMIN' }">
     <div class="text-end mb-3">
-  	  <a class="btn btn-outline-danger mb-1" role="button" data-bs-toggle="modal" data-bs-target="#memoryContentModal">
+  	  <a class="btn btn-outline-danger mb-1" role="button" data-bs-toggle="modal" data-bs-target="#albumAddModal">
 	    Add New Memory
 	  </a>
-	  <script>
-	  	$('a[data-bs-target="#memoryContentModal"]').on('click', function() {
-	  		$('#memoryContentModalLabel').html(memoryAddTitleGroup());
-	  		$('#memory-carousel-inner').html(memoryAddCode());
-	  		$('#memoryContent').html('<textarea class="form-control" id="memoryAddContent" rows="10"></textarea>');
-	  		$('#memoryContentModalFooter').html(memoryAddFooter());
-	  	});
-	  </script>
 	</div>
 	</c:if>
+	
+	<!-- 저장된 것이 없는 경우 출력 -->
+	<c:if test="${empty list }"><h1>No Memory is saved.</h1></c:if>
+    
+    <!-- 앨범 영역 -->
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
       <c:forEach items="${list }" var="m">
       <div class="col">
-        <div class="card shadow-sm overflow-hidden position-relative" role="button" data-bs-toggle="modal" data-bs-target="#memoryContentModal">
+        <div class="card shadow-sm overflow-hidden position-relative" role="button" data-bs-toggle="modal" data-bs-target="#albumContentModal">
           <span><input type="hidden" value="${m.idx }"></span>
           <span class="w-100 text-center text-white fs-4 fw-bold title">${m.title }</span>
           <span class="w-100 text-center text-white fs-5 city">${m.placeName }</span>
@@ -283,27 +180,27 @@ function memoryAddTitleGroup() {
       	$('.card').on('click', function() {
       		var idx = $(this).find('input').val();
       		$.ajax({
-      			url: 'memoryContent.do',
+      			url: 'albumContent.do',
       			data: {idx: idx},
       			success: function(data) {
       				//각각 받아돈 정보들을 모달창에 입력하는 코드
-      				$('#memoryContentModalLabel').html(data.memory.title);
-      				$('#memoryContent').html(data.memory.content);
-      				$('#memoryContentModal').append(memoryContentIdx(data.memory.idx));
+      				$('#albumContentModalLabel').html(data.album.title);
+      				$('#albumContent').html(data.album.content);
+      				$('#albumContentModal').append(albumContentIdx(data.album.idx));
       				
       				imgs = data.imgs; //받아온 json데이터에서 img들을 저장하는 변수
       				
       				//imgs가 없는 경우 빈 이미지를 출력하고, 있으면 해당 이미지를 모두 출력함
       				if(imgs.length == 0) {
-      					$('#memory-carousel-inner').html(memoryEmptyImgCode());
+      					$('#album-carousel-inner').html(albumEmptyImgCode());
       				} else {
 	      				for(var i = 0; i < imgs.length; i++) {
-	      					$('#memory-carousel-inner').append(memoryImgCode(imgs[i].img, i));
+	      					$('#album-carousel-inner').append(albumImgCode(imgs[i].img, i));
 	      				}
       				}
       				
       				//footer에 들어갈 버튼 코드
-  					$('#memoryContentModalFooter').html(memoryContentFooter());
+  					$('#albumContentModalFooter').html(albumContentFooter());
       			}
       		})
       		.fail(function() {
@@ -324,27 +221,30 @@ function memoryAddTitleGroup() {
 		});
       </script>
     </div>
+    
+    <!-- 페이징 -->
     <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mt-5">
       ${page }
     </div>
+    
   </div>
 </section>
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 
 <!-- Content Modal -->
-<input type="hidden" id="memoryContentModalOn" role="button" data-bs-toggle="modal" data-bs-target="#memoryContentModal">
-<div class="modal fade" id="memoryContentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="memoryContentModalLabel" aria-hidden="true">
+<input type="hidden" id="albumContentModalOn" role="button" data-bs-toggle="modal" data-bs-target="#albumContentModal">
+<div class="modal fade" id="albumContentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="albumContentModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title fs-4 fw-bold" id="memoryContentModalLabel">Modal title</h5>
-        <button type="button" class="btn-close memoryContentModalClose" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title fs-4 fw-bold" id="albumContentModalLabel">Modal title</h5>
+        <button type="button" class="btn-close albumContentModalClose" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body container" id="memoryContentModalContent">
+      <div class="modal-body container" id="albumContentModalContent">
         <div class="row">
 	      <div class="col-sm">
 			<div id="carouselCaptions" class="carousel slide" data-bs-ride="carousel" data-bs-touch="false" data-bs-interval="false">
-			  <div class="carousel-inner" id="memory-carousel-inner">
+			  <div class="carousel-inner" id="album-carousel-inner">
 			  	Image Code
 			  </div>
 			  <button class="carousel-control-prev" type="button" data-bs-target="#carouselCaptions" data-bs-slide="prev">
@@ -357,12 +257,12 @@ function memoryAddTitleGroup() {
 			  </button>
 			</div>
 	      </div>
-	      <div class="col-sm" id="memoryContent">
+	      <div class="col-sm" id="albumContent">
 	        Column
 	      </div>
 	    </div>
       </div>
-      <div class="modal-footer" id="memoryContentModalFooter">
+      <div class="modal-footer" id="albumContentModalFooter">
         Content Footer
       </div>
     </div>
@@ -370,15 +270,15 @@ function memoryAddTitleGroup() {
 </div>
 
 <!-- Content Update Modal -->
-<input type="hidden" id="memoryUpdateModalOn" role="button" data-bs-toggle="modal" data-bs-target="#memoryUpdateModal">
-<div class="modal fade" id="memoryUpdateModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="memoryUpdateModalLabel" aria-hidden="true">
+<input type="hidden" id="albumUpdateModalOn" role="button" data-bs-toggle="modal" data-bs-target="#albumUpdateModal">
+<div class="modal fade" id="albumUpdateModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="albumUpdateModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title fs-4 fw-bold"><input type="text" class="form-control" id="memoryUpdateModalLabel" placeholder="Example input placeholder"></h5>
-        <button type="button" class="btn-close memoryUpdateModalClose" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title fs-4 fw-bold"><input type="text" class="form-control" id="albumUpdateModalLabel" placeholder="Example input placeholder"></h5>
+        <button type="button" class="btn-close albumUpdateModalClose" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body container" id="memoryUpdateModalContent">
+      <div class="modal-body container" id="albumUpdateModalContent">
         <div class="row">
 	      <div class="col-sm">
 			<div id="updateCarouselCaptions" class="carousel slide" data-bs-ride="carousel" data-bs-touch="false" data-bs-interval="false">
@@ -395,18 +295,18 @@ function memoryAddTitleGroup() {
 			  </button>
 			</div>
 	      </div>
-	      <div class="col-sm" id="memoryUpdateContent">
-	        <textarea class="form-control" id="memoryUpdateContentTextarea" rows="10"></textarea>
+	      <div class="col-sm" id="albumUpdateContent">
+	        <textarea class="form-control" id="albumUpdateContentTextarea" rows="10"></textarea>
 	      </div>
 	    </div>
       </div>
-      <div class="modal-footer" id="memoryUpdateModalFooter">
+      <div class="modal-footer" id="albumUpdateModalFooter">
         <button type="button" class="btn btn-success">Save changes</button>        
-		<button type="button" class="btn btn-secondary memoryUpdateModalClose" data-bs-dismiss="modal">Close</button>
+		<button type="button" class="btn btn-secondary albumUpdateModalClose" data-bs-dismiss="modal">Close</button>
 		<script>
-			$('.memoryUpdateModalClose').on('click', function() {
-				$('#memoryContentModalOn').trigger('click');
-				$('#memoryUpdateModalLabel').val('');
+			$('.albumUpdateModalClose').on('click', function() {
+				$('#albumContentModalOn').trigger('click');
+				$('#albumUpdateModalLabel').val('');
 				$('#update-carousel-inner').html('');
 			});
 		</script>
@@ -415,29 +315,189 @@ function memoryAddTitleGroup() {
   </div>
 </div>
 
+
+<!-- Add Modal -->
+<input type="hidden" id="albumAddModalOn" role="button" data-bs-toggle="modal" data-bs-target="#albumAddModal">
+<div class="modal fade" id="albumAddModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="albumAddModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title fs-4 fw-bold" id="albumAddModalLabel">
+        
+        
+        <div class="row g-3 fs-5 fw-normal">
+			<div class="col-auto">
+				<input type="text" class="form-control" id="albumAddTitle" placeholder="Write Title...">
+			</div>
+			<div class="col-auto">
+				<select id="albumAddPlace" class="form-select" aria-label="Default select example">			    	
+					<option selected>Select City</option>
+					<option value="1">One</option>
+					<option value="2">Two</option>
+					<option value="3">Three</option>
+				</select>
+			</div>
+			<div class="col-auto">
+				<input id="albumAddDate" class="flatpickr" type="text" placeholder="Select Date.." data-id="range">
+				<script>
+					var startdate;
+					var enddate;
+					$(".flatpickr").flatpickr(
+						{
+							mode: "range",
+							dateFormat: "Y-m-d",
+							onClose: function(selectedDates, dateStr, instance) {
+    							startdate = selectedDates[0];
+    							enddate = selectedDates[1];
+							}				
+						}
+					);
+				</script>
+			</div>
+		</div>
+        
+        
+        </div>
+        <button type="button" class="btn-close albumAddModalClose" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body container" id="albumAddModalContent">
+        <div class="row">
+	      <div class="col-sm">
+			<div id="addCarouselCaptions" class="carousel carousel-dark slide" data-bs-ride="carousel" data-bs-touch="false" data-bs-interval="false">
+			  <div class="carousel-inner" id="album-carousel-inner" style="border: solid red 1px;">
+			  	
+			  	
+			  	
+			  	<div class="carousel-item active" role="button" id="addAlbumButton" style="border: solid black 1px; height: 100%;">
+				  <svg xmlns="http://www.w3.org/2000/svg" class="position-absolute top-50 start-50 translate-middle text-center" width="100" height="100" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/></svg>
+				</div>
+				<script>
+					$('#addAlbumButton').on('click', function() {
+						$('#addImageInput').trigger('click');
+					});
+				</script>
+			  	
+			  	<!-- 임시 이미지 -->
+			  	  <div class="carousel-item">
+			        <img src="http://myyk.co.kr/img/noimage.jpg" class="d-block w-100" alt="...">
+			      </div>
+			      <div class="carousel-item">
+			        <img src="http://myyk.co.kr/img/memory/ss2%20(2).JPG" class="d-block w-100" alt="...">
+			      </div>
+			      <div class="carousel-item">
+			        <img src="http://myyk.co.kr/img/memory/busan2.JPG" class="d-block w-100" alt="...">
+			      </div>
+			  	<!-- 임시 이미지 -->
+			  	
+			  </div>
+			  <button class="carousel-control-prev" type="button" data-bs-target="#addCarouselCaptions" data-bs-slide="prev">
+			    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+			    <span class="visually-hidden">Previous</span>
+			  </button>
+			  <button class="carousel-control-next" type="button" data-bs-target="#addCarouselCaptions" data-bs-slide="next">
+			    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+			    <span class="visually-hidden">Next</span>
+			  </button>
+			  
+			  
+			</div>
+	      </div>
+	      <div class="col-sm" id="albumAddContent">
+	        <textarea class="form-control" id="albumAddContent" rows="10"></textarea>
+	      </div>
+	    </div>
+      </div>
+      <div class="modal-footer" id="albumAddModalFooter">
+        <button type="button" id="albumAddSubmitButton" class="btn btn-primary">Submit</button>
+		<button type="button" class="btn btn-secondary albumAddModalClose" data-bs-dismiss="modal">Close</button>
+		<script>
+			$('#albumAddSubmitButton').on('click', function() {
+				
+				/*
+				var title = $('#albumAddTitle').val();
+				var content = $('#albumAddContent').val();
+				var place = $('#albumAddPlace').val();
+				var imgsLength = $('#album-carousel-inner').find('img').length;
+
+				//입력이 전부 되어 있는지 확인
+				if(title == '' || content == '' || startdate == null || place == 'Select City' || imgsLength == 0) {
+					window.alert('全ての情報を入力してください');
+					return;
+				}
+				
+				var form = $('<form></form>');
+				form.attr('action', 'index.do');
+				
+				form.append($('<input/>'), {type: 'hidden', name: 'title', value: title});
+				form.append($('<input/>'), {type: 'hidden', name: 'content', value: content});
+				form.append($('<input/>'), {type: 'hidden', name: 'place', value: place});
+				form.append($('<input/>'), {type: 'hidden', name: 'stardate', value: startdate});
+				form.append($('<input/>'), {type: 'hidden', name: 'enddate', value: enddate});
+				
+				form.appendTo('body');
+				form.submit();
+				*/
+			});
+		</script>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- 이미지를 추가하기 위한 코드 -->
-<form id="memoryImgAddForm" method="post" enctype="multipart/form-data">
-  <input type="file" id="addImageInput" multiple="multiple" accept="image/*" style="display: none;">
+<form id="albumImgAddForm" method="post" enctype="multipart/form-data">
+  <input type="file" id="addImageInput" name="files" multiple="multiple" accept="image/*" style="display: none;">
 </form>
+<div class="spinner-placeholder" style="display: none; background-color: rgba(0,0,0,0.6); width: 100%; height: 100%; border: solid black 5px; z-index: 1150; position: fixed; top: 0; left: 0;">
+  <div class="position-absolute top-50 start-50 translate-middle">
+    <div class="spinner-border text-light" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+</div>
 <script>
+/**
+ * 이미지 관련 ajax에 실패했을 때 메서드
+ */
+function imageRequestFailed() {
+	$('.spinner-placeholder').css('display', 'none');
+	window.alert('request failed!');
+}
+
 $('#addImageInput').on('change', function() {
-	var form = $('memoryImgAddForm')[0];
+	var form = $('#albumImgAddForm')[0];
 	var formData = new FormData(form);
 	window.alert('add Image Check');
 	
+	$('.spinner-placeholder').css('display', 'block');
+	
 	$.ajax({
-		url: 'tmpMemoryImgAdd.do',
+		url: 'tempAlbumImgAdd.do',
 		type: 'POST',
 		enctype: 'multipart/form-data',
 		data: formData,
 		processData: false,
 		contentType: false,
 		success: function(data) {
-			window.alert(data);
+			if(data > 0) {
+				$.ajax({
+					url: 'tempAlbumImageList.do',
+					type: 'POST',
+					success: function(data) {
+						
+						$('.spinner-placeholder').css('display', 'none');
+					}
+				})
+				.fail(function() {
+					imageRequestFailed();	
+				});
+			} else {
+				imageRequestFailed();	
+			}
 		}
 	})
 	.fail(function() {
-		window.alert('request failed!');
+		imageRequestFailed();
 	});
 	
 });

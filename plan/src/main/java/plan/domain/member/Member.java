@@ -16,6 +16,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import plan.app.MyEnum.RoleType;
 import plan.domain.item.Item;
 
 @Entity
@@ -33,7 +34,7 @@ public class Member {
 	private Date joinDate;
 	
 	@Enumerated(EnumType.STRING)
-	private RoleType rolyType;
+	private RoleType roleType;
 	
 	@OneToMany(mappedBy = "member")
 	private List<Item> items;
@@ -82,12 +83,12 @@ public class Member {
 		this.joinDate = joinDate;
 	}
 
-	public RoleType getRolyType() {
-		return rolyType;
+	public RoleType getRoleType() {
+		return roleType;
 	}
 
-	public void setRolyType(RoleType rolyType) {
-		this.rolyType = rolyType;
+	public void setRoleType(RoleType roleType) {
+		this.roleType = roleType;
 	}
 
 	public List<Item> getItems() {
@@ -96,10 +97,6 @@ public class Member {
 
 	public void setItems(List<Item> items) {
 		this.items = items;
-	}
-
-	public enum RoleType {
-		ADMIN, USER, AWIRTER
 	}
 	
 }

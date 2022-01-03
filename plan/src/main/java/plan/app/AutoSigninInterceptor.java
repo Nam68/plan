@@ -1,22 +1,20 @@
 package plan.app;
 
+import java.util.Date;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.util.WebUtils;
 
 import plan.domain.member.AutoAuthentication;
-import plan.domain.member.Member;
 import plan.repository.AutoAuthenticationRepository;
-import plan.service.MemberService;
 
-@Component
-public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
+public class AutoSigninInterceptor extends HandlerInterceptorAdapter{
 	
 	@Autowired
 	private AutoAuthenticationRepository ar;
@@ -32,7 +30,9 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
 			Cookie cookie = WebUtils.getCookie(request, "autoSignin");
 			if(cookie != null) {
 				AutoAuthentication authInfo = ar.findBySessionKey(cookie.getValue());
-				if(authInfo != null) session.setAttribute("member", authInfo.getMember()); 
+				if(authInfo != null && authInfo.getSessionLimit().after(new Date(System.currentTimeMillis()))) {
+					session.setAttribute("member", authInfo.getMember()); 
+				}
 			}
 		}
 		

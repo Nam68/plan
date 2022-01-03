@@ -22,7 +22,7 @@
     <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
     <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
   </symbol>
-  <symbol id="memory" viewBox="0 0 16 16">
+  <symbol id="album" viewBox="0 0 16 16">
   	<path d="M5 0h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2 2 2 0 0 1-2 2H3a2 2 0 0 1-2-2h1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1H1a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1H3a2 2 0 0 1 2-2z"/><path d="M1 6v-.5a.5.5 0 0 1 1 0V6h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V9h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 2.5v.5H.5a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1H2v-.5a.5.5 0 0 0-1 0z"/>
   </symbol>
   <symbol id="trip" viewBox="0 0 16 16">
@@ -38,21 +38,21 @@
   <div class="px-3 py-2 bg-dark text-white">
     <div class="container">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-        <a href="index.do" class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none">
+        <a href="/plan/index.do" class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none">
           <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstra2p"/></svg>
           <img alt="titleImg" src="http://epoche02.cafe24.com/img/title_light.png" class="bi me-2" width="150" height="60">
         </a>
 
         <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0 text-small">
           <li>
-            <a href="index.do" class="nav-link ${sessionScope.header == 'home'? 'text-primary':'text-white' }">
+            <a href="/plan/index.do" class="nav-link ${sessionScope.header == 'home'? 'text-primary':'text-white' }">
               <svg class="bi d-block mx-auto mb-1" width="24" height="24"><use xlink:href="#home"/></svg>
               Home
             </a>
           </li>
           <li>
-            <a href="memoryList.do" class="nav-link ${sessionScope.header == 'memory'? 'text-primary':'text-white' }">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-journals d-block mx-auto mb-1"><use xlink:href="#memory"/></svg>
+            <a href="/plan/album/albumList.do" class="nav-link ${sessionScope.header == 'album'? 'text-primary':'text-white' }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-journals d-block mx-auto mb-1"><use xlink:href="#album"/></svg>
               Memory
             </a>
           </li>
@@ -62,11 +62,11 @@
               Trip
             </a>
             <ul class="dropdown-menu" aria-labelledby="dropdownTripMenu">
-		      <li><a class="dropdown-item" href="registerPlace.do">Register Place</a></li>
-		      <li><a class="dropdown-item" href="placeList.do">Place List</a></li>
+		      <li><a class="dropdown-item" href="/plan/trip/registerPlace.do">Register Place</a></li>
+		      <li><a class="dropdown-item" href="/plan/trip/placeList.do">Place List</a></li>
 		      <li><hr class="dropdown-divider"></li>
-		      <li><a class="dropdown-item" href="#">Register Trip Plan</a></li>
-		      <li><a class="dropdown-item" href="#">Trip Plan List</a></li>
+		      <li><a class="dropdown-item" href="/plan/#">Register Trip Plan</a></li>
+		      <li><a class="dropdown-item" href="/plan/#">Trip Plan List</a></li>
 		    </ul>
           </li>
           <li>
@@ -76,7 +76,7 @@
             </a>
           </li>
           <li>
-            <a href="#" class="nav-link ${sessionScope.header == 'user'? 'text-primary':'text-white' }">
+            <a href="#" class="nav-link ${sessionScope.header == 'member'? 'text-primary':'text-white' }">
               <svg class="bi d-block mx-auto mb-1" width="24" height="24"><use xlink:href="#people-circle"/></svg>
               User Menu
             </a>
@@ -85,11 +85,11 @@
         
         <div class="col-md-3 text-end">
           <c:if test="${empty sessionScope.member }">
-            <a href="signin.do" class="px-2 text-white text-decoration-none">Sign in</a>
-            <a href="signup.do" class="px-2 text-white text-decoration-none">Sign up</a>
+            <a href="/plan/signin.do" class="px-2 text-white text-decoration-none">Sign in</a>
+            <a href="/plan/signup.do" class="px-2 text-white text-decoration-none">Sign up</a>
           </c:if>
           <c:if test="${!empty sessionScope.member }">
-	        <a href="signin.do" class="px-2 text-white text-decoration-none">Hello, ${sessionScope.member.name }! </a>
+	        <a href="/plan/signin.do" class="px-2 text-white text-decoration-none">Hello, ${sessionScope.member.name }! </a>
 	        <a role="button" class="px-2 text-white text-decoration-none" id="navSignout"> Sign out</a>
 			<script>
 	          	$('#navSignout').on('click', function() {
@@ -97,12 +97,12 @@
 	          		$('#confirmModalContent').html('Are you sure?');
 	          		$('#confirmModalSubmitButton').on('click', function() {
 	          			$.ajax({
-	          				url: 'signout.do',
+	          				url: '/plan/signout.do',
 	          				success: function(data) {
 	          					if(data > 0) {
 	          						$('#resultModalLabel').html('Sign out success');
 	          						$('#resultModalContent').html('See you later!');
-	          						$('#resultModalButton').attr('href', 'index.do');
+	          						$('#resultModalButton').attr('href', '/plan/index.do');
 	          						$('#resultModalOn').trigger('click');
 	          					} else {
 	          						$('#resultModalLabel').html('Sing out failed');

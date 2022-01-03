@@ -17,7 +17,7 @@
 	<tx:annotation-driven/>
 	
 	<!-- 어노테이션 경로 설정 -->
-	<context:component-scan base-package="plan.service, plan.respository"/>
+	<context:component-scan base-package="plan.service, plan.respository, plan.app"/>
 	
 	<!-- 데이터베이스에 접근할 데이터 소스 -->
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
@@ -60,5 +60,9 @@
 	
 	<!-- Spring Data JPA -->
 	<jpa:repositories base-package="plan.repository"/>
+	
+	
+	<bean id="authenticationApp" class="plan.app.AuthenticationApp"/>
+	<bean id="fileManager" class="plan.app.FileManager"/>
 
 </beans>

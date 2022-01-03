@@ -29,7 +29,12 @@ public class AutoAuthentication implements Persistable<String> {
 	public AutoAuthentication() {
 		
 	}
-		
+	
+	public AutoAuthentication(String sessionKey) {
+		super();
+		this.sessionKey = sessionKey;
+	}
+	
 	public AutoAuthentication(String sessionKey, Date sessionLimit, Long memberidx) {
 		super();
 		this.sessionKey = sessionKey;

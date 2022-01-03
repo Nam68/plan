@@ -7,7 +7,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 @Entity
 public class AlbumImage {
@@ -15,7 +14,7 @@ public class AlbumImage {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ALBUM_IMAGE_INDEX")
 	private Long index;
-	
+
 	@ManyToOne @JoinColumn(name = "ITEM_INDEX")
 	private Album album;
 	

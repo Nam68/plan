@@ -10,7 +10,6 @@
 	http://www.springframework.org/schema/context
 	http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<!-- Configs -->
 	<!-- 스프링 MVC 활성화 -->
 	<mvc:annotation-driven/>
 	
@@ -29,7 +28,7 @@
 	<mvc:interceptors>
 		<mvc:interceptor>
 			<mvc:mapping path="/**"/>
-			<bean id="authenticationInterceptor" class="plan.app.AuthenticationInterceptor"/>
+			<bean id="auatoSigninInterceptor" class="plan.app.AutoSigninInterceptor"/>
 		</mvc:interceptor>
 	</mvc:interceptors>
 		

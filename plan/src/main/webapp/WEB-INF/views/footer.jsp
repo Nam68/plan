@@ -51,7 +51,9 @@
   </footer>
 </div>
 
-<!-- Result Modal -->
+<!-- 
+	Result Modal 
+-->
 <input type="hidden" id="resultModalOn" data-bs-toggle="modal" data-bs-target="#resultModal"/>
 <div class="modal fade" id="resultModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -76,7 +78,9 @@
   </div>
 </div>
 
-<!-- Confirm Modal -->
+<!-- 
+	Confirm Modal 
+-->
 <input type="hidden" id="confirmModalOn" data-bs-toggle="modal" data-bs-target="#confirmModal"/>
 <div class="modal fade" id="confirmModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -101,3 +105,22 @@
     </div>
   </div>
 </div>
+
+<!-- 
+	Loading Spinner
+ -->
+<div class="spinner-placeholder" style="display: none; background-color: rgba(0,0,0,0.6); width: 100%; height: 100%; border: solid black 5px; z-index: 1150; position: fixed; top: 0; left: 0;">
+  <div class="position-absolute top-50 start-50 translate-middle">
+    <div class="spinner-border text-light" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+</div>
+<script>
+function loadingOn() {
+	$('.spinner-placeholder').css('display', 'block');
+}
+function loadingOff() {
+	$('.spinner-placeholder').css('display', 'none');
+}
+</script>

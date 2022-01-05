@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,11 +16,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import plan.domain.member.Member;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "DTYPE")
+@EntityListeners(AuditingEntityListener.class)
 public class Item {
 	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +35,7 @@ public class Item {
 	private String memo;
 	
 	@Temporal(TemporalType.TIMESTAMP)
+	@CreatedDate
 	private Date registerDate;
 	
 	@ManyToOne @JoinColumn(name = "MEMBER_ID")

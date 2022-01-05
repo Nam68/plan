@@ -2,6 +2,12 @@
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
+<c:if test="${sessionScope.member.roleType == 'ADMIN' }">
+<c:set var="permit" value="true"/>
+</c:if>
+<c:if test="${sessionScope.member.roleType != 'ADMIN' }">
+<c:set var="permit" value="false"/>
+</c:if>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -39,7 +45,7 @@ function initPage() { //페이지 초기화시 실행 (실행 코드는 헤더�
 
 
 /* 
- * 컨텐츠 모달창을 출력하기 위한 메서드 
+ * 컨텐츠 모달창의 이미지 추가 메서드
  */
 function albumImgCode(img, count) { //모달창에 들어갈 이미지 추가 코드 (count는 이미지의 순서)
 	var carouselClass = '';
@@ -61,85 +67,6 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
 		'</div>';
 	return code;
 }
-function albumContentIdx(idx) { //모달창이 현재 어떤 idx로 컨텐츠를 띄우고 있는지 hidden으로 저장(컨텐츠 변경 시 사용)
-	var code = '<input type="hidden" id="albumContentIdx" value="'+idx+'">';
-	return code;
-}
-function albumContentFooter() { //컨텐츠를 띄울 때 버튼창
-	var role = '${sessionScope.member.roleType}';
-	var code = '';
-	if(role == 'ADMIN') {
-		code += '<button type="button" class="btn btn-outline-danger albumContentDelete">Delete</button>'+
-		'<button type="button" class="btn btn-outline-success albumContentUpdate">Update</button>'+
-		'<script>'+
-			'$(\'.albumContentDelete\').on(\'click\', function() {'+
-				'albumContentDelete();'+ //딜리트 버튼을 클릭하면 해당 메서드 수행
-			'});'+
-			'$(\'.albumContentUpdate\').on(\'click\', function() {'+
-				'albumContentUpdate();'+ //업데이트 버튼을 클릭하면 해당 메서드 수행
-			'});'+
-		'<\/script>';
-	}
-		code += '<button type="button" class="btn btn-secondary albumContentModalClose" data-bs-dismiss="modal">Close</button>';
-	return code+albumFooterScript();
-}
-function albumFooterScript() { //닫기 버튼을 클릭했을 때 모달창을 초기화해주는 코드
-	var code = 
-		'<script>'+
-			'$(\'.albumContentModalClose\').on(\'click\', function() {'+
-				'$(\'#albumContentModalLabel\').html(\'\');'+
-				'$(\'#album-carousel-inner\').html(\'\');'+
-			'});'+
-		'<\/script>';
-	return code;
-}
-
-
-/*
- * 컨텐츠 업데이트/삭제 관련 메서드
- */
-function albumContentDelete() { //컨텐츠 삭제 스크립트(javascript로 버튼을 추가하기 때문에 따로 빼놓음)
-	var idx = $('#albumContentIdx').val();
-	if(window.confirm('削除すると復元できません！\n削除しますか？')) {
-		$.ajax({
-			url: 'albumDelete.do',
-			data: {idx: idx},
-			success: function(data) {
-				if(data > 0) {
-					window.alert('削除しました');
-					location.href='albumList.do';
-				} else {
-					window.alert('削除に失敗しました\n管理者にお問い合わせください');
-				}
-			}
-		})
-		.fail(function() {
-			window.alert('request failed!');
-		});
-	}
-}
-function albumContentUpdate() { //컨텐츠 업데이트 스크립트(javascript로 버튼을 추가하기 때문에 따로 빼놓음)
-	var idx = $('#albumContentIdx').val();
-	$.ajax({ //이미지 파일을 temp폴더에 올려놓기 위한 작업
-		url: 'albumUpdate.do',
-		method: 'GET',
-		data: {idx: idx},
-		success: function(data) {
-			if(data > 0) { //성공적으로 temp파일에 복사가 된 경우 실행
-				$('#albumUpdateModalLabel').val($('#albumContentModalLabel').html());
-				$('#update-carousel-inner').html($('#album-carousel-inner').html());
-				$('#update-carousel-inner').append(albumAddButton());
-				$('#albumUpdateContentTextarea').html($('#albumContent').html());
-				$('#albumUpdateModalOn').trigger('click');	
-			} else { //temp파일에 복사가 되지 않은 경우 -1이 출력됨
-				window.alert('request failed!');
-			}
-		}
-	})
-	.fail(function() {
-    	window.alert('request failed!');
-    });
-}
 </script>
 <body>
 <%@ include file="/WEB-INF/views/header.jsp" %>
@@ -149,7 +76,7 @@ function albumContentUpdate() { //컨텐츠 업데이트 스크립트(javascript
     <hr>
     
     <!-- 관리자 계정인 경우 추가 버튼 생성 -->
-    <c:if test="${sessionScope.member.roleType=='ADMIN' }">
+    <c:if test="${permit }">
     <div class="text-end mb-3">
   	  <a class="btn btn-outline-danger mb-1" role="button" data-bs-toggle="modal" data-bs-target="#albumAddModal">
 	    Add New Memory
@@ -184,9 +111,6 @@ function albumContentUpdate() { //컨텐츠 업데이트 스크립트(javascript
       			data: {idx: idx},
       			success: function(data) {
       				//각각 받아돈 정보들을 모달창에 입력하는 코드
-      				$('#albumContentModalLabel').html(data.album.title);
-      				$('#albumContent').html(data.album.content);
-      				$('#albumContentModal').append(albumContentIdx(data.album.idx));
       				
       				imgs = data.imgs; //받아온 json데이터에서 img들을 저장하는 변수
       				
@@ -199,8 +123,6 @@ function albumContentUpdate() { //컨텐츠 업데이트 스크립트(javascript
 	      				}
       				}
       				
-      				//footer에 들어갈 버튼 코드
-  					$('#albumContentModalFooter').html(albumContentFooter());
       			}
       		})
       		.fail(function() {
@@ -231,7 +153,10 @@ function albumContentUpdate() { //컨텐츠 업데이트 스크립트(javascript
 </section>
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 
-<!-- Content Modal -->
+<!-- 
+	Content Modal 
+-->
+<input type="hidden" id="albumContentIdx">
 <input type="hidden" id="albumContentModalOn" role="button" data-bs-toggle="modal" data-bs-target="#albumContentModal">
 <div class="modal fade" id="albumContentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="albumContentModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
@@ -263,13 +188,69 @@ function albumContentUpdate() { //컨텐츠 업데이트 스크립트(javascript
 	    </div>
       </div>
       <div class="modal-footer" id="albumContentModalFooter">
-        Content Footer
+		<button type="button" class="btn btn-outline-danger albumContentDelete">Delete</button>
+		<c:if test="${permit }">
+		<button type="button" class="btn btn-outline-success albumContentUpdate">Update</button>
+		</c:if>
+		<button type="button" class="btn btn-secondary albumContentModalClose" data-bs-dismiss="modal">Close</button>
+		<script>
+			$('.albumContentDelete').on('click', function() {
+				var idx = $('#albumContentIdx').val();
+				if(window.confirm('削除すると復元できません！\n削除しますか？')) {
+					$.ajax({
+						url: 'albumDelete.do',
+						data: {idx: idx},
+						success: function(data) {
+							if(data > 0) {
+								window.alert('削除しました');
+								location.href='albumList.do';
+							} else {
+								window.alert('削除に失敗しました\n管理者にお問い合わせください');
+							}
+						}
+					})
+					.fail(function() {
+						window.alert('request failed!');
+					});
+				}
+			});
+			
+			$('.albumContentUpdate').on('click', function() {
+				var idx = $('#albumContentIdx').val();
+				$.ajax({ //이미지 파일을 temp폴더에 올려놓기 위한 작업
+					url: 'albumUpdate.do',
+					method: 'GET',
+					data: {idx: idx},
+					success: function(data) {
+						if(data > 0) { //성공적으로 temp파일에 복사가 된 경우 실행
+							$('#albumUpdateModalLabel').val($('#albumContentModalLabel').html());
+							$('#update-carousel-inner').html($('#album-carousel-inner').html());
+							$('#update-carousel-inner').append(albumAddButton());
+							$('#albumUpdateContentTextarea').html($('#albumContent').html());
+							$('#albumUpdateModalOn').trigger('click');	
+						} else { //temp파일에 복사가 되지 않은 경우 -1이 출력됨
+							window.alert('request failed!');
+						}
+					}
+				})
+				.fail(function() {
+			    	window.alert('request failed!');
+			    });
+			});
+			
+			$('.albumContentModalClose').on('click', function() {
+				$('#albumContentModalLabel').html('');
+				$('#album-carousel-inner').html('');
+			});
+		</script>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Content Update Modal -->
+<!-- 
+	Content Update Modal 
+-->
 <input type="hidden" id="albumUpdateModalOn" role="button" data-bs-toggle="modal" data-bs-target="#albumUpdateModal">
 <div class="modal fade" id="albumUpdateModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="albumUpdateModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
@@ -316,25 +297,25 @@ function albumContentUpdate() { //컨텐츠 업데이트 스크립트(javascript
 </div>
 
 
-<!-- Add Modal -->
+<!-- 
+	Add Modal
+ -->
 <input type="hidden" id="albumAddModalOn" role="button" data-bs-toggle="modal" data-bs-target="#albumAddModal">
 <div class="modal fade" id="albumAddModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="albumAddModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <div class="modal-title fs-4 fw-bold" id="albumAddModalLabel">
-        
-        
         <div class="row g-3 fs-5 fw-normal">
 			<div class="col-auto">
 				<input type="text" class="form-control" id="albumAddTitle" placeholder="Write Title...">
 			</div>
 			<div class="col-auto">
-				<select id="albumAddPlace" class="form-select" aria-label="Default select example">			    	
-					<option selected>Select City</option>
-					<option value="1">One</option>
-					<option value="2">Two</option>
-					<option value="3">Three</option>
+				<select id="albumAddRegion" class="form-select" aria-label="Default select example">			    	
+					<option value="" selected>Select City...</option>
+					<c:forEach items="${regions }" var="r">
+					<option value="${r.value }">${r.name }</option>
+					</c:forEach>
 				</select>
 			</div>
 			<div class="col-auto">
@@ -355,8 +336,6 @@ function albumContentUpdate() { //컨텐츠 업데이트 스크립트(javascript
 				</script>
 			</div>
 		</div>
-        
-        
         </div>
         <button type="button" class="btn-close albumAddModalClose" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -364,11 +343,11 @@ function albumContentUpdate() { //컨텐츠 업데이트 스크립트(javascript
         <div class="row">
 	      <div class="col-sm">
 			<div id="addCarouselCaptions" class="carousel carousel-dark slide" data-bs-ride="carousel" data-bs-touch="false" data-bs-interval="false">
-			  <div class="carousel-inner" id="album-carousel-inner" style="border: solid red 1px;">
+			  <div class="carousel-inner" id="album-add-carousel-inner">
 			  	
 			  	
 			  	
-			  	<div class="carousel-item active" role="button" id="addAlbumButton" style="border: solid black 1px; height: 100%;">
+			  	<div class="carousel-item active" role="button" id="addAlbumButton">
 				  <svg xmlns="http://www.w3.org/2000/svg" class="position-absolute top-50 start-50 translate-middle text-center" width="100" height="100" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/></svg>
 				</div>
 				<script>
@@ -376,18 +355,8 @@ function albumContentUpdate() { //컨텐츠 업데이트 스크립트(javascript
 						$('#addImageInput').trigger('click');
 					});
 				</script>
-			  	
-			  	<!-- 임시 이미지 -->
-			  	  <div class="carousel-item">
-			        <img src="http://myyk.co.kr/img/noimage.jpg" class="d-block w-100" alt="...">
-			      </div>
-			      <div class="carousel-item">
-			        <img src="http://myyk.co.kr/img/memory/ss2%20(2).JPG" class="d-block w-100" alt="...">
-			      </div>
-			      <div class="carousel-item">
-			        <img src="http://myyk.co.kr/img/memory/busan2.JPG" class="d-block w-100" alt="...">
-			      </div>
-			  	<!-- 임시 이미지 -->
+				
+				
 			  	
 			  </div>
 			  <button class="carousel-control-prev" type="button" data-bs-target="#addCarouselCaptions" data-bs-slide="prev">
@@ -398,12 +367,10 @@ function albumContentUpdate() { //컨텐츠 업데이트 스크립트(javascript
 			    <span class="carousel-control-next-icon" aria-hidden="true"></span>
 			    <span class="visually-hidden">Next</span>
 			  </button>
-			  
-			  
 			</div>
 	      </div>
-	      <div class="col-sm" id="albumAddContent">
-	        <textarea class="form-control" id="albumAddContent" rows="10"></textarea>
+	      <div class="col-sm">
+	        <textarea class="form-control" id="albumAddMemo" rows="10"></textarea>
 	      </div>
 	    </div>
       </div>
@@ -412,31 +379,48 @@ function albumContentUpdate() { //컨텐츠 업데이트 스크립트(javascript
 		<button type="button" class="btn btn-secondary albumAddModalClose" data-bs-dismiss="modal">Close</button>
 		<script>
 			$('#albumAddSubmitButton').on('click', function() {
-				
-				/*
 				var title = $('#albumAddTitle').val();
-				var content = $('#albumAddContent').val();
-				var place = $('#albumAddPlace').val();
-				var imgsLength = $('#album-carousel-inner').find('img').length;
-
+				var memo = $('#albumAddMemo').val();
+				var region = $('#albumAddRegion').val();
+				var imgsLength = $('#album-add-carousel-inner').find('img').length;
+								
 				//입력이 전부 되어 있는지 확인
-				if(title == '' || content == '' || startdate == null || place == 'Select City' || imgsLength == 0) {
+				if(title == '' || memo == '' || startdate == null || region == '' || imgsLength == 0) {
 					window.alert('全ての情報を入力してください');
 					return;
 				}
 				
 				var form = $('<form></form>');
-				form.attr('action', 'index.do');
+				form.attr('action', 'albumAdd.do');
+				form.attr('method', 'POST');
 				
-				form.append($('<input/>'), {type: 'hidden', name: 'title', value: title});
-				form.append($('<input/>'), {type: 'hidden', name: 'content', value: content});
-				form.append($('<input/>'), {type: 'hidden', name: 'place', value: place});
-				form.append($('<input/>'), {type: 'hidden', name: 'stardate', value: startdate});
-				form.append($('<input/>'), {type: 'hidden', name: 'enddate', value: enddate});
+				form.append($('<input/>', {type: 'hidden', name: 'title', value: title}));
+				form.append($('<input/>', {type: 'hidden', name: 'memo', value: memo}));
+				form.append($('<input/>', {type: 'hidden', name: 'region', value: region}));
+				form.append($('<input/>', {type: 'hidden', name: 'startDate', value: startdate}));
+				form.append($('<input/>', {type: 'hidden', name: 'endDate', value: enddate}));
 				
 				form.appendTo('body');
 				form.submit();
-				*/
+			});
+			
+			/**
+			*	메모리 추가 모달 닫기버튼 : temp 폴더 삭제
+			*/
+			$('.albumAddModalClose').on('click', function() {
+				loadingOn();
+				
+				$.ajax({
+					url: 'tempAlbumImageDelete.do',
+					method: 'GET',
+					success: function(data) {
+						loadingOff();
+					}
+				})
+				.fail(function() {
+					loadingOff();
+					window.alert('Images are not loaded...\nPlease Check Login Status And Try Again');
+				})
 			});
 		</script>
       </div>
@@ -448,28 +432,20 @@ function albumContentUpdate() { //컨텐츠 업데이트 스크립트(javascript
 <form id="albumImgAddForm" method="post" enctype="multipart/form-data">
   <input type="file" id="addImageInput" name="files" multiple="multiple" accept="image/*" style="display: none;">
 </form>
-<div class="spinner-placeholder" style="display: none; background-color: rgba(0,0,0,0.6); width: 100%; height: 100%; border: solid black 5px; z-index: 1150; position: fixed; top: 0; left: 0;">
-  <div class="position-absolute top-50 start-50 translate-middle">
-    <div class="spinner-border text-light" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-  </div>
-</div>
 <script>
 /**
- * 이미지 관련 ajax에 실패했을 때 메서드
+ * 이미지 input의 정보가 바뀌었을 때 메서드
  */
-function imageRequestFailed() {
-	$('.spinner-placeholder').css('display', 'none');
-	window.alert('request failed!');
-}
-
 $('#addImageInput').on('change', function() {
 	var form = $('#albumImgAddForm')[0];
 	var formData = new FormData(form);
-	window.alert('add Image Check');
 	
-	$('.spinner-placeholder').css('display', 'block');
+	//취소버튼을 누르면 아래를 진행하지 않음
+	if($('#addImageInput').val() == '') {
+		return;	
+	}
+	
+	loadingOn();
 	
 	$.ajax({
 		url: 'tempAlbumImgAdd.do',
@@ -479,25 +455,64 @@ $('#addImageInput').on('change', function() {
 		processData: false,
 		contentType: false,
 		success: function(data) {
-			if(data > 0) {
+			//이미지가 성공적으로 temp폴더에 들어간 경우
+			if(data == 'SUCCESS') {
+				//temp폴더 내의 모든 이미지 루트를 가져옴
 				$.ajax({
 					url: 'tempAlbumImageList.do',
-					type: 'POST',
+					type: 'GET',
 					success: function(data) {
+						//temp 내의 이미지 루트를 가져온 경우
+						if(data != null) {
+							
+							//이미지 추가 버튼을 위한 코드
+							var addButtonCode =
+								'<div class="carousel-item active" role="button" id="addAlbumButton">'+
+								  '<svg xmlns="http://www.w3.org/2000/svg" class="position-absolute top-50 start-50 translate-middle text-center" width="100" height="100" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/></svg>'+
+								'</div>'+
+								'<script>'+
+									'$(\'#addAlbumButton\').on(\'click\', function() {'+
+										'$(\'#addImageInput\').trigger(\'click\');'+
+									'});'+
+								'<\/script>';
+							
+							//임시 이미지를 이어붙이는 코드
+							var tempImageCode = '';
+							for(var i = 0; i < data.length; i++) {
+								tempImageCode +=
+									'<div class="carousel-item">'+
+							          '<img src="'+data[i]+'" class="d-block w-100" alt="'+data[i]+'">'+
+							      	'</div>';
+							}
+							
+							var code = addButtonCode + tempImageCode;
+							$('#album-add-carousel-inner').html(code);
+							
+							loadingOff();
+							
+						//temp 내의 이미지 루트가 없거나 로그인이 되어 있지 않은 경우
+						} else {
+							loadingOff();	
+							window.alert('Images are not loaded...\nPlease Check Login Status And Try Again');
+						}
 						
-						$('.spinner-placeholder').css('display', 'none');
 					}
 				})
-				.fail(function() {
-					imageRequestFailed();	
+				//temp폴더 내의 이미지를 불러오는 데에 실패한 경우
+				.fail(function() { 
+					loadingOff();
+					window.alert('Images are not loaded...');
 				});
+			//이미지를 temp폴더에 넣지 못한 경우
 			} else {
-				imageRequestFailed();	
+				loadingOff();	
+				window.alert('Images are not registered...');
 			}
 		}
 	})
 	.fail(function() {
-		imageRequestFailed();
+		loadingOff();	
+		window.alert('request failed!');
 	});
 	
 });

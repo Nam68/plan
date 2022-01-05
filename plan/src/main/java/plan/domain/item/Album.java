@@ -3,6 +3,7 @@ package plan.domain.item;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -13,6 +14,7 @@ import javax.persistence.TemporalType;
 import plan.app.MyEnum.Region;
 
 @Entity
+@DiscriminatorValue("A")
 public class Album extends Item {
 	
 	@Temporal(TemporalType.DATE)

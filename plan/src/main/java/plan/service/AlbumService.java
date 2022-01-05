@@ -44,13 +44,16 @@ public class AlbumService {
 	public ErrorJudgment save(Album album, Member member) {
 		if(album == null) return ErrorJudgment.ERROR; 
 		
-		album.setMember(member);
-		ar.save(album);
 		
 		List<AlbumImage> images = getTempAlbumImageList(member.getId(), album);
 		if(images == null) return ErrorJudgment.ERROR;
 		
-		air.saveAll(images);
+
+		album.setMember(member);
+		album.setImages(images);
+		ar.save(album);
+		
+		//air.saveAll(images);
 		
 		return ErrorJudgment.SUCCESS;
 	}
@@ -123,7 +126,7 @@ public class AlbumService {
 	
 	
 	public List<Album> findAll(int page) {
-		PageRequest pageRequest = PageRequest.of(page, 9, Direction.DESC, "ITEM_INDEX");
+		PageRequest pageRequest = PageRequest.of(page, 9, Direction.DESC, "index");
 		List<Album> result = ar.findAll(pageRequest).getContent();
 		return result;
 	}

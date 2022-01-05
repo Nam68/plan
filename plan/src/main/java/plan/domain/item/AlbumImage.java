@@ -2,6 +2,7 @@ package plan.domain.item;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,7 +16,7 @@ public class AlbumImage {
 	@Column(name = "ALBUM_IMAGE_INDEX")
 	private Long index;
 
-	@ManyToOne @JoinColumn(name = "ITEM_INDEX")
+	@ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "ITEM_INDEX")
 	private Album album;
 	
 	private String path;

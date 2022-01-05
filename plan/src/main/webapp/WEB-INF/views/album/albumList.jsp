@@ -109,15 +109,17 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
     
     <!-- 앨범 영역 -->
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-      <c:forEach items="${list }" var="m">
+      <c:forEach items="${list }" var="list">
       <div class="col">
         <div class="card shadow-sm overflow-hidden position-relative" role="button" data-bs-toggle="modal" data-bs-target="#albumContentModal">
-          <span><input type="hidden" value="${m.idx }"></span>
-          <span class="w-100 text-center text-white fs-4 fw-bold title">${m.title }</span>
-          <span class="w-100 text-center text-white fs-5 city">${m.placeName }</span>
-          <span class="w-100 text-center text-white fs-6 startdate">${m.startdate }~${m.enddate }</span>
+          <span><input type="hidden" value="${list.index }"></span>
+          <span class="w-100 text-center text-white fs-4 fw-bold title">${list.title }</span>
+          <span class="w-100 text-center text-white fs-5 city">${list.region }</span>
+          <span class="w-100 text-center text-white fs-6 startdate">${list.startDate }~${list.endDate }</span>
           <div class="scale">
-          	<img class="bd-placeholder-img card-img-top" alt="" src="${empty m.img? 'http://myyk.co.kr/img/noimage.jpg':m.img }"/>    	  
+          	<!-- 
+          	<img class="bd-placeholder-img card-img-top" alt="" src="${empty list.images? 'http://myyk.co.kr/img/noimage.jpg':m.img }"/>
+          	     -->	  
           </div>
         </div>
       </div>

@@ -20,6 +20,7 @@ import plan.app.MyEnum.ErrorJudgment;
 import plan.domain.item.Album;
 import plan.domain.item.AlbumImage;
 import plan.domain.member.Member;
+import plan.repository.AlbumImageRepository;
 import plan.repository.AlbumRepository;
 
 @Service
@@ -33,6 +34,9 @@ public class AlbumService {
 	@Autowired
 	private AlbumRepository ar;
 	
+	@Autowired
+	private AlbumImageRepository air;
+	
 	/**
 	 * JPA
 	 */
@@ -40,13 +44,13 @@ public class AlbumService {
 	public ErrorJudgment save(Album album, Member member) {
 		if(album == null) return ErrorJudgment.ERROR; 
 		
-		List<AlbumImage> images = getTempAlbumImageList(member.getId());
-		if(images == null) return ErrorJudgment.ERROR;
-		
 		album.setMember(member);
 		ar.save(album);
 		
-		System.out.println("index = "+album.getIndex());
+		List<AlbumImage> images = getTempAlbumImageList(member.getId(), album);
+		if(images == null) return ErrorJudgment.ERROR;
+		
+		air.saveAll(images);
 		
 		return ErrorJudgment.SUCCESS;
 	}
@@ -73,10 +77,9 @@ public class AlbumService {
 	 */
 	public List<String> tempAlbumImageList(String id) {
 		File temp = manager.getTempFolder(id);
-		File[] files = temp.listFiles();
 		
 		List<String> result = new ArrayList<String>();
-		for(File file : files) {
+		for(File file : temp.listFiles()) {
 			if(file.isFile()) result.add(manager.getTempPath(id)+file.getName());
 		}
 		return result;
@@ -85,25 +88,24 @@ public class AlbumService {
 	/**
 	 * 임시 폴더에 저장된 이미지 목록을 memory폴더로 이동하면서 AlbumImage 리스트를 반환(submit을 하면 실행)
 	 */
-	public List<AlbumImage> getTempAlbumImageList(String id) {
+	public List<AlbumImage> getTempAlbumImageList(String id, Album album) {
 		File temp = manager.getTempFolder(id);
 		File view = manager.getViewFolder();
 		
-		File[] files = temp.listFiles();
-		
 		List<AlbumImage> result = new ArrayList<AlbumImage>();
-		for(File file : files) {
-			if(file.isFile()) {
-				File newFile = new File(view.getPath()+"/"+file.getName());
-				ErrorJudgment error = manager.copyFile(file, newFile);
-				if(error == ErrorJudgment.ERROR) return null;
-
-				AlbumImage image = new AlbumImage();
-				image.setPath(manager.getViewPath()+newFile.getName());
-				result.add(image);
-			}
+		for(File file : temp.listFiles()) {
+			//temp 폴더의 이미지를 memory 폴더로 복사
+			File newFile = new File(view.getPath()+"/"+file.getName());
+			if(manager.copyFile(file, newFile) == ErrorJudgment.ERROR) return null;
+			
+			//memory 폴더의 이미지 경로를 DB에 저장할 수 있도록 가공 후 엔티티에 전달
+			AlbumImage image = new AlbumImage();
+			image.setAlbum(album);
+			image.setPath(manager.getViewPath() + newFile.getName());
+			result.add(image);
 		}
-		tempAlbumImageDelete(id);
+		
+		if(result != null) tempAlbumImageDelete(id);
 		return result;
 	}
 	

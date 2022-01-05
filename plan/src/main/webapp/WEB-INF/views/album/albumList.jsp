@@ -81,6 +81,26 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
   	  <a class="btn btn-outline-danger mb-1" role="button" data-bs-toggle="modal" data-bs-target="#albumAddModal">
 	    Add New Memory
 	  </a>
+	  <script>
+	  	/**
+	  	*	추가 버튼을 누르면 임시파일 삭제
+	  	*/
+	  	$('a[data-bs-target="#albumAddModal"]').on('click', function() {
+	  		loadingOn();
+			
+			$.ajax({
+				url: 'tempAlbumImageDelete.do',
+				method: 'GET',
+				success: function(data) {
+					loadingOff();
+				}
+			})
+			.fail(function() {
+				loadingOff();
+				window.alert('Images are not loaded...\nPlease Check Login Status And Try Again');
+			});
+	  	});
+	  </script>
 	</div>
 	</c:if>
 	
@@ -420,7 +440,7 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
 				.fail(function() {
 					loadingOff();
 					window.alert('Images are not loaded...\nPlease Check Login Status And Try Again');
-				})
+				});
 			});
 		</script>
       </div>

@@ -61,7 +61,7 @@
 	<!-- Spring Data JPA -->
 	<jpa:repositories base-package="plan.repository"/>
 	
-	
+	<!-- MyApp -->
 	<bean id="authenticationApp" class="plan.app.AuthenticationApp"/>
 	<bean id="fileManager" class="plan.app.FileManager"/>
 

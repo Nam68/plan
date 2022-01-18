@@ -1,5 +1,6 @@
 package plan.controller;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import plan.app.AuthenticationApp;
 import plan.app.MyEnum.ErrorJudgment;
@@ -28,10 +28,7 @@ import plan.service.AlbumService;
 public class AlbumController {
 	
 	@Autowired
-	private AuthenticationApp a;
-	
-	@Autowired
-	private AlbumService as;
+	private AlbumService service;
 	
 	@RequestMapping("/album/albumList.do")
 	public String albumList(HttpSession session, Model model, @RequestParam(defaultValue = "1")int page) {
@@ -49,9 +46,16 @@ public class AlbumController {
 		model.addAttribute("regions", regionList);
 		
 		model.addAttribute("page", page);
-		model.addAttribute("list", as.findAll(page));
+		model.addAttribute("list", service.findAllWithPage(page));
+		model.addAttribute("pageCode", service.pageCode(page));
 		
 		return "album/albumList";
+	}
+	
+	@RequestMapping(value = "/album/albumContent.do")
+	@ResponseBody
+	public Album albumContent(Long index) {
+		return service.find(index);
 	}
 	
 	@RequestMapping(value = "/album/albumAdd.do", method = RequestMethod.POST)
@@ -60,7 +64,14 @@ public class AlbumController {
 		Member member = (Member) session.getAttribute("member");
 		if(member == null) return ErrorJudgment.ERROR;
 		
-		return as.save(album, member);
+		return service.save(album, member);
+	}
+	
+	@RequestMapping(value = "albumUpdate.do", method = RequestMethod.GET)
+	@ResponseBody
+	public ErrorJudgment albumUpdate(Long index, HttpSession session) {
+		Member member = (Member) session.getAttribute("member");
+		return service.tempAlbumImageForUpdate(service.find(index), member.getId());
 	}
 	
 	/**
@@ -71,7 +82,7 @@ public class AlbumController {
 	public ErrorJudgment tmpAlbumImgAdd(MultipartFile[] files, HttpSession session) {
 		Member member = (Member) session.getAttribute("member");
 		if(member == null) return ErrorJudgment.ERROR;
-		return as.tempAlbumImgAdd(files, member.getId());
+		return service.tempAlbumImgAdd(files, member.getId());
 	}
 	
 	@RequestMapping("/album/tempAlbumImageList.do")
@@ -80,7 +91,7 @@ public class AlbumController {
 		Member member = (Member) session.getAttribute("member");
 		if(member == null) return null;
 		
-		return as.tempAlbumImageList(member.getId());
+		return service.tempAlbumImageList(member.getId());
 	}
 	
 	@RequestMapping("/album/tempAlbumImageDelete.do")
@@ -88,7 +99,7 @@ public class AlbumController {
 	public ErrorJudgment tempAlbumImageDelete(HttpSession session) {
 		Member member = (Member) session.getAttribute("member");
 		if(member == null) return ErrorJudgment.ERROR;
-		as.tempAlbumImageDelete(member.getId());
+		service.tempAlbumImageDelete(member.getId());
 		return ErrorJudgment.SUCCESS;
 	}
 	

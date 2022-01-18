@@ -19,6 +19,9 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <link href="/plan/css/header.css" rel="stylesheet">
 <link href="/plan/css/album.css" rel="stylesheet">
+<style>
+#albumInfo {font-size: 2vh;} 
+</style>
 </head>
 <script>
 function initPage() { //페이지 초기화시 실행 (실행 코드는 헤더에 있음)
@@ -47,17 +50,16 @@ function initPage() { //페이지 초기화시 실행 (실행 코드는 헤더�
 /* 
  * 컨텐츠 모달창의 이미지 추가 메서드
  */
-function albumImgCode(img, count) { //모달창에 들어갈 이미지 추가 코드 (count는 이미지의 순서)
-	var carouselClass = '';
-	if(count==0) {
-		carouselClass = 'carousel-item active'; //첫 번째 이미지에는 active 클래스를 부여해야 함
-	} else {
-		carouselClass = 'carousel-item';
-	}
-	var code = 
-		'<div class="'+carouselClass+'">'+
-			'<img src="'+img+'" class="d-block w-100" width="400" height="300" alt="...">'+
-		'</div>';
+function albumImageAddCode() { //모달창에 들어갈 이미지 추가 코드 (count는 이미지의 순서)
+	var code =
+		'<div class="carousel-item active" role="button" id="addAlbumButton">'+
+		  '<svg xmlns="http://www.w3.org/2000/svg" class="position-absolute top-50 start-50 translate-middle text-center" width="100" height="100" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/></svg>'+
+		'</div>'+
+		'<script>'+
+			'$(\'#addAlbumButton\').on(\'click\', function() {'+
+				'$(\'#addImageInput\').trigger(\'click\');'+
+			'});'+
+		'<\/script>';
 	return code;
 }
 function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이미지를 출력하는 코드
@@ -104,10 +106,14 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
 	</div>
 	</c:if>
 	
-	<!-- 저장된 것이 없는 경우 출력 -->
+	<!-- 
+		저장된 것이 없는 경우 출력 
+	-->
 	<c:if test="${empty list }"><h1>No Memory is saved.</h1></c:if>
     
-    <!-- 앨범 영역 -->
+    <!-- 
+    	앨범 영역 
+    -->
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
       <c:forEach items="${list }" var="list">
       <div class="col">
@@ -117,33 +123,56 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
           <span class="w-100 text-center text-white fs-5 city">${list.region }</span>
           <span class="w-100 text-center text-white fs-6 startdate">${list.startDate }~${list.endDate }</span>
           <div class="scale">
-          	<!-- 
-          	<img class="bd-placeholder-img card-img-top" alt="" src="${empty list.images? 'http://myyk.co.kr/img/noimage.jpg':m.img }"/>
-          	     -->	  
+          
+          	<img class="bd-placeholder-img card-img-top" alt="" src="${empty list.images? 'http://myyk.co.kr/img/noimage.jpg':list.images[0].path }"/>
+			<!-- 왜 전부 출력되지 않는 건지 페이징 확인 -->
+			<!-- 그 후에는 컨텐츠 출력 및 업데이트 -->
+			
           </div>
         </div>
       </div>
       </c:forEach>
       <script>
-        var imgs;
       	$('.card').on('click', function() {
-      		var idx = $(this).find('input').val();
+      		var index = $(this).find('input').val();
+      		
       		$.ajax({
       			url: 'albumContent.do',
-      			data: {idx: idx},
+      			data: {index: index},
+      			//성공한 경우 content modal에 정보를 전달해서 출력
       			success: function(data) {
-      				//각각 받아돈 정보들을 모달창에 입력하는 코드
+      				/*
+      				*	출력
+      				*/
+      				$('#albumContentModalLabel').html(data.title); //타이틀
+      				$('#albumContentRegion').html(data.region); //장소
+      				$('#albumContentWriter').html(data.member.name); //작성자
+      				$('#albumContentStartdate').html(new Date(data.startDate).toLocaleDateString()); //출발일
+      				$('#albumContentEnddate').html(new Date(data.endDate).toLocaleDateString()); //도착일
+      				$('#albumContent').html(data.memo); //메모
       				
-      				imgs = data.imgs; //받아온 json데이터에서 img들을 저장하는 변수
-      				
-      				//imgs가 없는 경우 빈 이미지를 출력하고, 있으면 해당 이미지를 모두 출력함
-      				if(imgs.length == 0) {
-      					$('#album-carousel-inner').html(albumEmptyImgCode());
-      				} else {
-	      				for(var i = 0; i < imgs.length; i++) {
-	      					$('#album-carousel-inner').append(albumImgCode(imgs[i].img, i));
-	      				}
-      				}
+      				/*
+      				*	이미지를 이어붙이는 코드
+      				*/
+					var imageCode = '';
+					for(var i = 0; i < data.images.length; i++) {
+						imageCode +=
+							'<div class="carousel-item';
+						if(i == 0) {
+							imageCode +=
+								' active';
+						}
+						imageCode +=
+							'">'+
+					          '<img src="'+data.images[i].path+'" class="d-block w-100" alt="'+data.images[i].index+'">'+
+					      	'</div>';
+					}
+					
+					if(data.images.length <= 0) {
+						imageCode = '<div class="carousel-item active"><img src="http://myyk.co.kr/img/noimage.jpg" class="d-block w-100" alt="Image Not Founded"></div>';
+					}
+				
+					$('#album-carousel-inner').html(imageCode);
       				
       			}
       		})
@@ -151,6 +180,10 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
       			window.alert('request failed!');
       		});
       	});
+      	
+      	/*
+      	*	마우스를 올리면 나타나는 이벤트
+      	*/
 	  	$('.card').mouseover(function(){
 			$(this).find('.scale').trigger('mouseenter');
 		});
@@ -168,7 +201,7 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
     
     <!-- 페이징 -->
     <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mt-5">
-      ${page }
+	  ${pageCode }
     </div>
     
   </div>
@@ -204,8 +237,17 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
 			  </button>
 			</div>
 	      </div>
-	      <div class="col-sm" id="albumContent">
-	        Column
+	      <div class="col-sm container">
+	      	<div class="row row-cols-2 pt-1 mb-1" id="albumInfo">
+	      		<div><span>場所：</span><span id="albumContentRegion"></span></div>
+	      		<div><span>出発日：</span><span id="albumContentStartdate"></span></div>
+	      		<div><span>作成者：</span><span id="albumContentWriter"></span></div>
+	      		<div><span>到着日：</span><span id="albumContentEnddate"></span></div>
+	      	</div>
+	      	<hr>
+	      	<div class="row mt-1" id="albumContent">
+	      		Memo
+	      	</div>
 	      </div>
 	    </div>
       </div>
@@ -216,6 +258,9 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
 		</c:if>
 		<button type="button" class="btn btn-secondary albumContentModalClose" data-bs-dismiss="modal">Close</button>
 		<script>
+			/*
+			*	컨텐츠 삭제 버튼 클릭
+			*/
 			$('.albumContentDelete').on('click', function() {
 				var idx = $('#albumContentIdx').val();
 				if(window.confirm('削除すると復元できません！\n削除しますか？')) {
@@ -223,7 +268,7 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
 						url: 'albumDelete.do',
 						data: {idx: idx},
 						success: function(data) {
-							if(data > 0) {
+							if(data == 'SUCCESS') {
 								window.alert('削除しました');
 								location.href='albumList.do';
 							} else {
@@ -237,20 +282,24 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
 				}
 			});
 			
+			/*
+			*	컨텐츠 업데이트 버튼 클릭
+			*/
 			$('.albumContentUpdate').on('click', function() {
 				var idx = $('#albumContentIdx').val();
+				
+				
 				$.ajax({ //이미지 파일을 temp폴더에 올려놓기 위한 작업
 					url: 'albumUpdate.do',
-					method: 'GET',
 					data: {idx: idx},
 					success: function(data) {
-						if(data > 0) { //성공적으로 temp파일에 복사가 된 경우 실행
+						if(data == 'SUCCESS') { //성공적으로 temp파일에 복사가 된 경우 실행
 							$('#albumUpdateModalLabel').val($('#albumContentModalLabel').html());
 							$('#update-carousel-inner').html($('#album-carousel-inner').html());
 							$('#update-carousel-inner').append(albumAddButton());
 							$('#albumUpdateContentTextarea').html($('#albumContent').html());
 							$('#albumUpdateModalOn').trigger('click');	
-						} else { //temp파일에 복사가 되지 않은 경우 -1이 출력됨
+						} else {
 							window.alert('request failed!');
 						}
 					}
@@ -488,15 +537,7 @@ $('#addImageInput').on('change', function() {
 						if(data != null) {
 							
 							//이미지 추가 버튼을 위한 코드
-							var addButtonCode =
-								'<div class="carousel-item active" role="button" id="addAlbumButton">'+
-								  '<svg xmlns="http://www.w3.org/2000/svg" class="position-absolute top-50 start-50 translate-middle text-center" width="100" height="100" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/></svg>'+
-								'</div>'+
-								'<script>'+
-									'$(\'#addAlbumButton\').on(\'click\', function() {'+
-										'$(\'#addImageInput\').trigger(\'click\');'+
-									'});'+
-								'<\/script>';
+							var addButtonCode = albumImageAddCode();
 							
 							//임시 이미지를 이어붙이는 코드
 							var tempImageCode = '';

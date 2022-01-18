@@ -16,7 +16,7 @@ public class AlbumImage {
 	@Column(name = "ALBUM_IMAGE_INDEX")
 	private Long index;
 
-	@ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "ITEM_INDEX")
+	@ManyToOne(fetch = FetchType.EAGER) @JoinColumn(name = "ITEM_INDEX")
 	private Album album;
 	
 	private String path;

@@ -11,12 +11,12 @@
   z-index: 1;
 }
 .scale_hover {
+  filter: brightness(30%);
   transform: scale(1.2);
   -webkit-transform: scale(1.2);
   -moz-transform: scale(1.2);
   -ms-transform: scale(1.2);
   -o-transform: scale(1.2);
-  filter: brightness(30%);
 }
 .carousel-inner {
 	height: 247px;
@@ -32,6 +32,7 @@
   height: 40vh;
   position: relative;
 }
+.card span {text-shadow: 2px 2px 6px gray; }
 .card>.title {
   position: absolute;
   z-index: 2;

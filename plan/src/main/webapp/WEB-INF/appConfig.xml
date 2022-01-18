@@ -64,5 +64,6 @@
 	<!-- MyApp -->
 	<bean id="authenticationApp" class="plan.app.AuthenticationApp"/>
 	<bean id="fileManager" class="plan.app.FileManager"/>
+	<bean id="pageApp" class="plan.app.PageApp"/>
 
 </beans>

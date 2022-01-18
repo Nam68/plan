@@ -13,6 +13,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import plan.app.MyEnum.Region;
 
 @Entity
@@ -29,6 +31,7 @@ public class Album extends Item {
 	private Region region;
 	
 	@OneToMany(mappedBy = "album", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JsonIgnoreProperties({"album"})
 	private List<AlbumImage> images;
 	
 	public Album() {
@@ -51,8 +54,8 @@ public class Album extends Item {
 		this.endDate = endDate;
 	}
 
-	public Region getRegion() {
-		return region;
+	public String getRegion() {
+		return region.getValue();
 	}
 
 	public void setRegion(Region region) {

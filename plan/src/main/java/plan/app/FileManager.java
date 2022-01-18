@@ -16,13 +16,24 @@ public class FileManager {
 		TEMP("/epoche02/tomcat/webapps/ROOT/img/temp/"), TEMP_VIEW("http://myyk.co.kr/img/temp/"),
 		SERVER("/epoche02/tomcat/webapps/ROOT/img/memory/"), VIEW("http://myyk.co.kr/img/memory/"), 
 		TEMP_VIEW_TEST("C:/epoche02/tomcat/webapps/ROOT/img/temp/"), VIEW_TEST("C:/epoche02/tomcat/webapps/ROOT/img/memory/"); 
+		
+		//TEMP와 SERVER는 getTempFolder(), getViewFolder() 메서드를 이용해 File의 경로를 가져와서 사용할 것
+		
 		private String value;
+		
 		private FilePath(String value) {
 			this.value = value;
 		}
 		private String getValue() {
 			return value;
 		}
+	}
+	
+	/**
+	 * http 경로에서 파일 이름을 가져옴
+	 */
+	public String getFileName(String viewUrl) {
+		return viewUrl.substring(viewUrl.lastIndexOf("/")+1);
 	}
 	
 	/**
@@ -37,7 +48,7 @@ public class FileManager {
 	 */
 	public String getViewPath() {
 		return FilePath.VIEW.getValue();
-	}
+	}	
 	
 	/**
 	 * 구별자(id)를 통해 temp 폴더 내에 임시폴더를 생성함

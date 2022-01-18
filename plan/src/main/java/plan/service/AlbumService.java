@@ -3,6 +3,7 @@ package plan.service;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import plan.app.FileManager;
 import plan.app.MyEnum.ErrorJudgment;
+import plan.app.PageApp;
 import plan.domain.item.Album;
 import plan.domain.item.AlbumImage;
 import plan.domain.member.Member;
@@ -30,16 +32,24 @@ public class AlbumService {
 	
 	@Autowired
 	private FileManager manager;
+	@Autowired
+	private PageApp pageApp;
 	
 	@Autowired
-	private AlbumRepository ar;
+	private AlbumRepository repository;
 	
-	@Autowired
-	private AlbumImageRepository air;
+	private static final int CONTENTS_SIZE = 9;
+	private static final int PAGE_SIZE = 5;
+	private static final String URL = "albumList.do";
 	
 	/**
 	 * JPA
 	 */
+	public Album find(Long index) {
+		Optional<Album> result = repository.findById(index);
+		return result.get();
+	}
+	
 	@Transactional
 	public ErrorJudgment save(Album album, Member member) {
 		if(album == null) return ErrorJudgment.ERROR; 
@@ -51,7 +61,7 @@ public class AlbumService {
 
 		album.setMember(member);
 		album.setImages(images);
-		ar.save(album);
+		repository.save(album);
 		
 		//air.saveAll(images);
 		
@@ -121,14 +131,54 @@ public class AlbumService {
 	}
 	
 	
-	
-	
-	
-	
-	public List<Album> findAll(int page) {
-		PageRequest pageRequest = PageRequest.of(page, 9, Direction.DESC, "index");
-		List<Album> result = ar.findAll(pageRequest).getContent();
+	/**
+	 * 업데이트할 앨범의 이미지들을 임시폴더로 이동
+	 */
+	public ErrorJudgment tempAlbumImageForUpdate(Album album, String id) {
+		ErrorJudgment result = ErrorJudgment.ERROR;
+		
+		List<AlbumImage> images = album.getImages();
+		File view = manager.getViewFolder();
+		File temp = manager.getTempFolder(id);
+		
+		for(AlbumImage image : images) {
+			String name = manager.getFileName(image.getPath());
+			
+			File viewFile = new File(view.getPath()+"/"+name);
+			File tempFile = new File(temp.getPath()+"/"+name);
+			
+			result = manager.copyFile(viewFile, tempFile);	
+		}
+		
+		//성공적으로 temp폴더로 옮겨간 경우 원본파일 삭제
+		if(result == ErrorJudgment.SUCCESS) {
+			for(AlbumImage image : images) {
+				String name = manager.getFileName(image.getPath());
+				File viewFile = new File(view.getPath()+"/"+name);
+				viewFile.delete();
+			}
+		}
+				
 		return result;
+	}
+	
+	
+	
+	/**
+	 * 페이징된 album 가져오기
+	 */
+	public List<Album> findAllWithPage(int page) {
+		//페이지 시작이 0페이지부터이므로 1부터 시작으로 계산된 page 변수에서 1을 뺌
+		PageRequest pageRequest = PageRequest.of(page-1, CONTENTS_SIZE, Direction.DESC, "index");
+		List<Album> result = repository.findAll(pageRequest).getContent();
+		return result;
+	}
+	
+	/**
+	 * 앱을 통해 페이지네이션 코드를 반환하는 메서드
+	 */
+	public String pageCode(int page) {
+		return pageApp.getPageCode(page, repository.count(), CONTENTS_SIZE, PAGE_SIZE, URL);
 	}
 	
 }

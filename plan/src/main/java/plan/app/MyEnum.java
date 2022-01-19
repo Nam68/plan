@@ -1,5 +1,12 @@
 package plan.app;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import plan.app.MyEnum.Region;
+
 public class MyEnum {
 	
 	public enum ErrorJudgment {
@@ -59,6 +66,18 @@ public class MyEnum {
 		
 		public String getValue() {
 			return value;
+		}
+		
+		public static List<Map<String, String>> getJsonList() {
+			Region[] enums = Region.values();
+			List<Map<String, String>> regionList = new ArrayList<Map<String, String>>();
+			for(Region region : enums) {
+				Map<String, String> map = new HashMap<String, String>();
+				map.put("name", region.getValue());
+				map.put("value", region.toString());
+				regionList.add(map);
+			}
+			return regionList;
 		}
 	}
 	

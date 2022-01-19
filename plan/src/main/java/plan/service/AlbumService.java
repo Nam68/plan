@@ -130,6 +130,29 @@ public class AlbumService {
 		manager.deleteAllFiles(temp);
 	}
 	
+	/**
+	 * 임시폴더에서 이미지 삭제
+	 */
+	public ErrorJudgment tempAlbumImageDelete(String id, List<String> urls) {
+		List<File> list = new ArrayList<File>();
+		File temp = manager.getTempFolder(id);
+		
+		for(String url : urls) {
+			String name = manager.getFileName(url);
+			File tempFile = new File(temp.getPath()+"/"+name);
+			
+			if(tempFile.exists()) {
+				list.add(tempFile);
+			} else {
+				return ErrorJudgment.ERROR;
+			}
+		}
+		
+		for(File file : list) {
+			file.delete();
+		}
+		return ErrorJudgment.SUCCESS;
+	}
 	
 	/**
 	 * 업데이트할 앨범의 이미지들을 임시폴더로 이동

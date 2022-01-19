@@ -80,27 +80,12 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
     <!-- 관리자 계정인 경우 추가 버튼 생성 -->
     <c:if test="${permit }">
     <div class="text-end mb-3">
-  	  <a class="btn btn-outline-danger mb-1" role="button" data-bs-toggle="modal" data-bs-target="#albumAddModal">
+  	  <a id="albumAddButton" class="btn btn-outline-danger mb-1" role="button">
 	    Add New Memory
 	  </a>
 	  <script>
-	  	/**
-	  	*	추가 버튼을 누르면 임시파일 삭제
-	  	*/
-	  	$('a[data-bs-target="#albumAddModal"]').on('click', function() {
-	  		loadingOn();
-			
-			$.ajax({
-				url: 'tempAlbumImageDelete.do',
-				method: 'GET',
-				success: function(data) {
-					loadingOff();
-				}
-			})
-			.fail(function() {
-				loadingOff();
-				window.alert('Images are not loaded...\nPlease Check Login Status And Try Again');
-			});
+	  	$('#albumAddButton').on('click', function() {
+	  		location.href = 'albumAdd.do';
 	  	});
 	  </script>
 	</div>
@@ -123,11 +108,7 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
           <span class="w-100 text-center text-white fs-5 city">${list.region }</span>
           <span class="w-100 text-center text-white fs-6 startdate">${list.startDate }~${list.endDate }</span>
           <div class="scale">
-          
-          	<img class="bd-placeholder-img card-img-top" alt="" src="${empty list.images? 'http://myyk.co.kr/img/noimage.jpg':list.images[0].path }"/>
-			<!-- 왜 전부 출력되지 않는 건지 페이징 확인 -->
-			<!-- 그 후에는 컨텐츠 출력 및 업데이트 -->
-			
+          	<img class="bd-placeholder-img card-img-top" alt="" src="${empty list.images? 'http://myyk.co.kr/img/noimage.jpg':list.images[0].path }"/>		
           </div>
         </div>
       </div>
@@ -171,7 +152,7 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
 					if(data.images.length <= 0) {
 						imageCode = '<div class="carousel-item active"><img src="http://myyk.co.kr/img/noimage.jpg" class="d-block w-100" alt="Image Not Founded"></div>';
 					}
-				
+				  
 					$('#album-carousel-inner').html(imageCode);
       				
       			}
@@ -238,7 +219,7 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
 			</div>
 	      </div>
 	      <div class="col-sm container">
-	      	<div class="row row-cols-2 pt-1 mb-1" id="albumInfo">
+	      	<div class="row row-cols-2 pt-1 mb-1 text-start" id="albumInfo">
 	      		<div><span>場所：</span><span id="albumContentRegion"></span></div>
 	      		<div><span>出発日：</span><span id="albumContentStartdate"></span></div>
 	      		<div><span>作成者：</span><span id="albumContentWriter"></span></div>

@@ -1,10 +1,7 @@
 package plan.controller;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -16,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import plan.app.AuthenticationApp;
 import plan.app.MyEnum.ErrorJudgment;
@@ -30,20 +28,15 @@ public class AlbumController {
 	@Autowired
 	private AlbumService service;
 	
+	@Autowired
+	private AuthenticationApp auth;
+	
 	@RequestMapping("/album/albumList.do")
 	public String albumList(HttpSession session, Model model, @RequestParam(defaultValue = "1")int page) {
 		session.setAttribute("header", "album");
 		
 		//지역 전체를 넘겨주는 코드
-		Region[] enums = Region.values();
-		List<Map<String, String>> regionList = new ArrayList<Map<String, String>>();
-		for(Region region : enums) {
-			Map<String, String> map = new HashMap<String, String>();
-			map.put("name", region.getValue());
-			map.put("value", region.toString());
-			regionList.add(map);
-		}
-		model.addAttribute("regions", regionList);
+		model.addAttribute("regions", Region.getJsonList());
 		
 		model.addAttribute("page", page);
 		model.addAttribute("list", service.findAllWithPage(page));
@@ -56,6 +49,19 @@ public class AlbumController {
 	@ResponseBody
 	public Album albumContent(Long index) {
 		return service.find(index);
+	}
+	
+	@RequestMapping(value = "/album/albumAdd.do", method = RequestMethod.GET)
+	public ModelAndView albumAdd(HttpSession session) {
+		ModelAndView mav = new ModelAndView();
+		Member member = (Member) session.getAttribute("member");
+		
+		if(auth.isAdmin(session, mav) && member != null) {
+			mav.setViewName("album/albumAdd");
+			mav.addObject("regions", Region.getJsonList());
+			service.tempAlbumImageDelete(member.getId()); //임시폴더에 있을지도 모르는 파일들 삭제
+		}
+		return mav;
 	}
 	
 	@RequestMapping(value = "/album/albumAdd.do", method = RequestMethod.POST)
@@ -94,13 +100,13 @@ public class AlbumController {
 		return service.tempAlbumImageList(member.getId());
 	}
 	
-	@RequestMapping("/album/tempAlbumImageDelete.do")
+	@RequestMapping(value = "/album/tempAlbumImageDelete.do", method = RequestMethod.POST)
 	@ResponseBody
-	public ErrorJudgment tempAlbumImageDelete(HttpSession session) {
+	public ErrorJudgment tempAlbumImageDelete(@RequestParam(value = "urls")List<String> urls, HttpSession session) {
 		Member member = (Member) session.getAttribute("member");
 		if(member == null) return ErrorJudgment.ERROR;
-		service.tempAlbumImageDelete(member.getId());
-		return ErrorJudgment.SUCCESS;
+		System.out.println(urls.size());
+		return service.tempAlbumImageDelete(member.getId(), urls);
 	}
 	
 }

@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=EUC-KR"
-    pageEncoding="EUC-KR"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,6 +14,16 @@
 <link href="/plan/css/album.css" rel="stylesheet">
 </head>
 <body>
-
+<%@ include file="/WEB-INF/views/header.jsp" %>
+<section class="container">
+  <div class="px-4 py-5 my-5 text-center">
+    <h1 class="display-5 fw-bold">Modify Memory</h1>
+    <hr>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+    
+    </div>
+  </div>
+</section>  
+<%@ include file="/WEB-INF/views/footer.jsp" %>
 </body>
 </html>

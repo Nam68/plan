@@ -101,11 +101,20 @@ public class AlbumService {
 		File temp = manager.getTempFolder(id);
 		File view = manager.getViewFolder();
 		
+		//업데이트 submit시 momory 폴더의 기존 파일 삭제
+		if(album.getImages().size() > 0) {
+			for(AlbumImage image : album.getImages()) {
+				String name = manager.getFileName(image.getPath());
+				File viewFile = new File(view.getPath()+"/"+name);
+				if(viewFile.exists()) viewFile.delete();
+			}
+		}
+				
+		//temp의 새로운 파일 등록
 		List<AlbumImage> result = new ArrayList<AlbumImage>();
 		for(File file : temp.listFiles()) {
 			//temp 폴더의 이미지를 memory 폴더로 복사
 			File newFile = new File(view.getPath()+"/"+file.getName());
-			if(newFile.exists()) continue;
 			if(manager.copyFile(file, newFile) == ErrorJudgment.ERROR) return null;
 			
 			//memory 폴더의 이미지 경로를 DB에 저장할 수 있도록 가공 후 엔티티에 전달
@@ -178,18 +187,7 @@ public class AlbumService {
 			if(result == ErrorJudgment.ERROR) break;
 		}
 		
-		if(result == ErrorJudgment.SUCCESS) {
-			//성공적으로 temp폴더로 옮겨간 경우 원본파일 삭제
-			
-			/*
-			for(AlbumImage image : images) {
-				String name = manager.getFileName(image.getPath());
-				File viewFile = new File(view.getPath()+"/"+name);
-				viewFile.delete();
-			}
-			*/
-			
-		} else {
+		if(result == ErrorJudgment.ERROR) {
 			//temp폴더로 옮기는 데에 실패한 경우 이미 옮겨진 temp폴더 내 이미지 삭제
 			manager.deleteAllFiles(temp);
 		}

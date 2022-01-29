@@ -54,17 +54,13 @@ public class AlbumService {
 	public ErrorJudgment save(Album album, Member member) {
 		if(album == null) return ErrorJudgment.ERROR; 
 		
-		
 		List<AlbumImage> images = getTempAlbumImageList(member.getId(), album);
 		if(images == null) return ErrorJudgment.ERROR;
 		
-
 		album.setMember(member);
 		album.setImages(images);
 		repository.save(album);
-		
-		//air.saveAll(images);
-		
+				
 		return ErrorJudgment.SUCCESS;
 	}
 	
@@ -109,6 +105,7 @@ public class AlbumService {
 		for(File file : temp.listFiles()) {
 			//temp 폴더의 이미지를 memory 폴더로 복사
 			File newFile = new File(view.getPath()+"/"+file.getName());
+			if(newFile.exists()) continue;
 			if(manager.copyFile(file, newFile) == ErrorJudgment.ERROR) return null;
 			
 			//memory 폴더의 이미지 경로를 DB에 저장할 수 있도록 가공 후 엔티티에 전달
@@ -164,6 +161,12 @@ public class AlbumService {
 		File view = manager.getViewFolder();
 		File temp = manager.getTempFolder(id);
 		
+		//temp폴더에 파일이 있으면 temp폴더를 삭제하고 다시 생성
+		if(temp.listFiles().length != 0) {
+			manager.deleteAllFiles(temp);
+			temp = manager.getTempFolder(id);
+		}
+		
 		for(AlbumImage image : images) {
 			String name = manager.getFileName(image.getPath());
 			
@@ -171,15 +174,24 @@ public class AlbumService {
 			File tempFile = new File(temp.getPath()+"/"+name);
 			
 			result = manager.copyFile(viewFile, tempFile);	
+			
+			if(result == ErrorJudgment.ERROR) break;
 		}
 		
-		//성공적으로 temp폴더로 옮겨간 경우 원본파일 삭제
 		if(result == ErrorJudgment.SUCCESS) {
+			//성공적으로 temp폴더로 옮겨간 경우 원본파일 삭제
+			
+			/*
 			for(AlbumImage image : images) {
 				String name = manager.getFileName(image.getPath());
 				File viewFile = new File(view.getPath()+"/"+name);
 				viewFile.delete();
 			}
+			*/
+			
+		} else {
+			//temp폴더로 옮기는 데에 실패한 경우 이미 옮겨진 temp폴더 내 이미지 삭제
+			manager.deleteAllFiles(temp);
 		}
 				
 		return result;

@@ -131,6 +131,7 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
       				$('#albumContentStartdate').html(new Date(data.startDate).toLocaleDateString()); //출발일
       				$('#albumContentEnddate').html(new Date(data.endDate).toLocaleDateString()); //도착일
       				$('#albumContent').html(data.memo); //메모
+      				$('#albumContentIdx').val(data.index); //인덱스
       				
       				/*
       				*	이미지를 이어붙이는 코드
@@ -267,19 +268,23 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
 			*	컨텐츠 업데이트 버튼 클릭
 			*/
 			$('.albumContentUpdate').on('click', function() {
-				var idx = $('#albumContentIdx').val();
-				
+				var index = $('#albumContentIdx').val();
 				
 				$.ajax({ //이미지 파일을 temp폴더에 올려놓기 위한 작업
 					url: 'albumUpdate.do',
-					data: {idx: idx},
+					data: {index: index},
 					success: function(data) {
 						if(data == 'SUCCESS') { //성공적으로 temp파일에 복사가 된 경우 실행
-							$('#albumUpdateModalLabel').val($('#albumContentModalLabel').html());
-							$('#update-carousel-inner').html($('#album-carousel-inner').html());
-							$('#update-carousel-inner').append(albumAddButton());
-							$('#albumUpdateContentTextarea').html($('#albumContent').html());
-							$('#albumUpdateModalOn').trigger('click');	
+							
+							var form = $('<form></form>');
+							form.attr('action', 'albumUpdate.do');
+							form.attr('method', 'post');
+							
+							form.append($('<input/>', {type:'hidden', name:'index', value:index}));
+							
+							form.appendTo('body');
+							form.submit();
+							
 						} else {
 							window.alert('request failed!');
 						}

@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta charset="EUC-KR">
-<title>Add Memory</title>
+<title>Modify Memory</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -13,27 +13,38 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <link href="/plan/css/header.css" rel="stylesheet">
 <link href="/plan/css/album.css" rel="stylesheet">
+<script>
+var startdate = new Date('${album.startDate}');
+var enddate = new Date('${album.endDate}');
+function initPage() {
+	$('#albumContentStartdate').val(new Date(startdate).toLocaleDateString());
+	$('#albumContentEnddate').val(new Date(enddate).toLocaleDateString());
+	
+	var startDate_string = $('#albumContentStartdate').val();
+	var endDate_string = $('#albumContentEnddate').val();
+	$('.flatpickr').val(startDate_string + " ~ " + endDate_string);
+}
+</script>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/header.jsp" %>
 <section class="container">
   <div class="px-4 py-5 my-5 text-center">
-    <h1 class="display-5 fw-bold">Add Memory</h1>
+    <h1 class="display-5 fw-bold">Modify Memory</h1>
     <hr>
     <div class="g-3">
 	  <div>
 	    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
 	      <div class="modal-content shadow p-3 mb-5 bg-body rounded">
-	        <form id="albumAddForm" action="albumAdd.do" method="post">
+	        <!-- JPA에서는 식별자가 없으면 insert, 있으면 update를 자동으로 매칭하기에 같은 컨트롤러에 매킹해도 된다 -->
+	        <form id="albumUpdateForm" action="albumAdd.do" method="post">
 	        <div class="modal-header row">
 	          <div class="modal-title col">
-	            <input id="albumTitle" name="title" class="form-control" type="text" placeholder="Please Write a Title...">
+	            <input id="albumTitle" name="title" class="form-control" type="text" value="${album.title }">
 	          </div>
 	          <div class="col">
-	            <input id="albumAddDate" class="flatpickr form-control btn btn-info" type="text" placeholder="Select Date.." data-id="range">
+	            <input id="albumUpdateDate" class="flatpickr form-control btn btn-info" type="text" placeholder="Select Date.." data-id="range">
 				<script>
-					var startdate;
-					var enddate;
 					$(".flatpickr").flatpickr(
 						{
 							mode: "range",
@@ -68,9 +79,11 @@
 				      <!-- 이미지 추가 스크립트는 하단에 -->
 				    </div>
 				    <div id="album-carousel-inner" class="carousel-inner">
-				  	  <div id="addAlbumIcon" class="carousel-item active" role="button">
-		  				<svg xmlns="http://www.w3.org/2000/svg" class="position-absolute top-50 start-50 translate-middle text-center" width="100" height="100" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/></svg>
+				  	  <c:forEach items="${album.images }" var="img" varStatus="status">
+				  	  <div class="carousel-item ${status.index==0? 'active':'' }">
+						<img src="${img.path }" class="d-block w-100" alt="${img.index }">
 					  </div>
+				  	  </c:forEach>
 				    </div>
 				    <button class="carousel-control-prev" type="button" data-bs-target="#carouselCaptions" data-bs-slide="prev">
 				      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -89,7 +102,7 @@
 		      		  <span>
 		      		    <select id="albumContentRegion" name="region">
 		      		  	  <c:forEach items="${regions }" var="r">
-		      		  	    <option value="${r.value }">${r.name }</option>
+		      		  	    <option value="${r.value }" ${album.region==r.name? 'selected':'' }>${r.name }</option>
 		      		  	  </c:forEach>
 		      		  	</select>  
 		      		  </span>
@@ -97,16 +110,16 @@
 		      		<div class="mb-2">
 		      		  <span>出発日：</span>
 		      		  <span><input id="albumContentStartdate" disabled type="text" role="button" style="width: 15vh;"></span>
-		      		  <input name="startDate" type="hidden">
+		      		  <input name="startDate" type="hidden" value="${album.startDate }">
 		      		</div>
 		      		<div>
-		      		  <span>作成者：</span>
+		      		  <span>修正者：</span>
 		      		  <span id="albumContentWriter">${sessionScope.member.name }</span>
 		      		</div>
 		      		<div>
 		      		  <span>到着日：</span>
 		      		  <span><input id="albumContentEnddate" disabled type="text" role="button" style="width: 15vh;"></span>
-		      		  <input name="endDate" type="hidden">
+		      		  <input name="endDate" type="hidden" value="${album.endDate }">
 		      		</div>
 		      	  </div>
 		      	  <script>
@@ -126,7 +139,7 @@
 		      	  </script>
 		      	  <hr>
 		      	  <div id="albumContent" class="row mt-1 ms-1">
-		      		<textarea id="albumTextarea" name="memo" class="form-control" rows="8"></textarea>
+		      		<textarea id="albumTextarea" name="memo" class="form-control" rows="8">${album.memo }</textarea>
 		      	  </div>
 		        </div>
 		      </div>
@@ -134,12 +147,12 @@
 	        </form>
 	        <div class="modal-footer">
 	          <button type="button" class="btn btn-secondary">Return</button>
-	          <button type="button" class="btn btn-primary">Save</button>
+	          <button type="button" class="btn btn-success">Update</button>
 	          <script>
 	          	$('.btn-secondary').on('click', function() {
 	          		history.back();
 	          	});
-	          	$('.btn-primary').on('click', function() {
+	          	$('.btn-success').on('click', function() {
 	          		
 	          		var title = $('#albumTitle').val();
 	          		var imgs = $('#album-carousel-inner').find('img');
@@ -153,7 +166,8 @@
 	          		$('input[name="startDate"]').val(startdate);
 	          		$('input[name="endDate"]').val(enddate);
 	          		
-	          		$('#albumAddForm').submit();
+	          		$('#albumUpdateForm').append($('<input/>', {name:'index', type:'hidden', value:'${album.index}'}));
+	          		$('#albumUpdateForm').submit();
 	          	});
 	          </script>
 	        </div>

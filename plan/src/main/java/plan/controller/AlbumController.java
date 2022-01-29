@@ -20,6 +20,7 @@ import plan.app.MyEnum.ErrorJudgment;
 import plan.app.MyEnum.Region;
 import plan.domain.item.Album;
 import plan.domain.member.Member;
+import plan.model.vo.GlobalVO;
 import plan.service.AlbumService;
 
 @Controller
@@ -65,19 +66,43 @@ public class AlbumController {
 	}
 	
 	@RequestMapping(value = "/album/albumAdd.do", method = RequestMethod.POST)
-	@ResponseBody
-	public ErrorJudgment albumAdd(Album album, HttpSession session) {
-		Member member = (Member) session.getAttribute("member");
-		if(member == null) return ErrorJudgment.ERROR;
+	public String albumAdd(Album album, HttpSession session, Model model) {
+		GlobalVO vo = new GlobalVO();
 		
-		return service.save(album, member);
+		Member member = (Member) session.getAttribute("member");
+		if(member == null) {
+			vo.setMassage("アカウント情報が見つかりません！");
+			vo.setHref("/plan/signin.do");
+		} else {
+			
+			if(service.save(album, member) == ErrorJudgment.SUCCESS) {
+				vo.setMassage("登録が完了されました");
+				vo.setHref("albumList.do");
+			} else {
+				vo.setMassage("登録できません！\n管理者にお問い合わせください");
+				vo.setHref("albumAdd.do");
+			}
+			
+		}
+		
+		model.addAttribute("vo", vo);
+		return "global";
 	}
 	
-	@RequestMapping(value = "albumUpdate.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/album/albumUpdate.do", method = RequestMethod.GET)
 	@ResponseBody
 	public ErrorJudgment albumUpdate(Long index, HttpSession session) {
 		Member member = (Member) session.getAttribute("member");
+		if(member == null) return ErrorJudgment.ERROR;
+		
 		return service.tempAlbumImageForUpdate(service.find(index), member.getId());
+	}
+	
+	@RequestMapping(value = "/album/albumUpdate.do", method = RequestMethod.POST)
+	public String albumUpdate(Long index, Model model) {
+		model.addAttribute("album", service.find(index));
+		model.addAttribute("regions", Region.getJsonList());
+		return "album/albumUpdate";
 	}
 	
 	/**

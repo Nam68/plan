@@ -62,8 +62,8 @@
               Trip
             </a>
             <ul class="dropdown-menu" aria-labelledby="dropdownTripMenu">
-		      <li><a class="dropdown-item" href="/plan/trip/registerPlace.do">Register Place</a></li>
-		      <li><a class="dropdown-item" href="/plan/trip/placeList.do">Place List</a></li>
+		      <li><a class="dropdown-item" href="/plan/trip/place/registerPlace.do">Register Place</a></li>
+		      <li><a class="dropdown-item" href="/plan/trip/place/placeList.do">Place List</a></li>
 		      <li><hr class="dropdown-divider"></li>
 		      <li><a class="dropdown-item" href="/plan/#">Register Trip Plan</a></li>
 		      <li><a class="dropdown-item" href="/plan/#">Trip Plan List</a></li>

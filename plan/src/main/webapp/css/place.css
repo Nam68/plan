@@ -1,0 +1,7 @@
+@charset "UTF-8";
+
+#map, #input-form{height: 55vh; }
+#infowindow-content .title {font-weight: bold; }
+#infowindow-content {display: none; }
+#map #infowindow-content {display: inline; }
+.form-select {display: none; }

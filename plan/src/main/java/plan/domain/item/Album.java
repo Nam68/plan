@@ -55,7 +55,7 @@ public class Album extends Item {
 	}
 
 	public String getRegion() {
-		return region.getValue();
+		return region.getValue_jpn();
 	}
 
 	public void setRegion(Region region) {

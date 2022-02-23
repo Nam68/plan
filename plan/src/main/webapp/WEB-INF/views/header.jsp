@@ -34,7 +34,7 @@
 </svg>
 
 <!-- 헤더 시작위치 -->
-<header>
+<header style="z-index: 2000;">
   <div class="px-3 py-2 bg-dark text-white">
     <div class="container">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">

@@ -10,13 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <link href="/plan/css/header.css" rel="stylesheet">
-<style>
-#map, #input-form{height: 55vh; }
-#infowindow-content .title {font-weight: bold; }
-#infowindow-content {display: none; }
-#map #infowindow-content {display: inline; }
-.form-select {display: none; }
-</style>
+<link href="/plan/css/place.css" rel="stylesheet">
 <script>
 let map;
 let infowindow;
@@ -148,23 +142,20 @@ function regionPicker(region) {
 		url: 'regionPick.do',
 		data: {region: region},
 		success: function(data) {
+						
+			$('#region-input').val(data.input);
+			$('#region-value').val(data.value);
 			
+			if(data.value == 'OVERSEAS') {
+				$('.form-select').css('display', 'block');
+			} else {
+				$('.form-select').css('display', 'none');
+			}
 			
-			/**
-				맵 정보에서 가져와진 지역명을 가공해서 리턴
-				(변수인 region은 구글 주소의 가장 앞 부분을 반환 중)
-			
-				구글맵의 단어와 enum을 연결할 방법이 필요함.
-			*/
-			
-			
-			
-			$('#region-input').val(/*blah blah blah*/);
-			$('#region-value').val(/*blah blah blah*/);
 		}
 	})
 	.fail(function() {
-		window.alert('request failed!!');
+		window.alert('request failed!');
 	});
 }
 </script>
@@ -194,24 +185,23 @@ function initPage() {
       <div id="map" class="rounded col-sm"></div>
       <div id="input-form" class="col-sm text-start">
       <form name="form">
-      	<input name="pidx" type="hidden" value="${placesave.pidx }">
 		<div class="mb-3">
 		  <label for="pac-input" class="form-label">Place Search</label>
-		  <input id="pac-input" class="form-control" name="name" value="${placesave.name }" type="text" placeholder="Search...">
+		  <input id="pac-input" class="form-control" name="title" type="text" placeholder="Search...">
 		    <div id="infowindow-content">
-		      <span id="place-name" class="title"></span><br />
+		      <span id="place-name" class="title"></span><br/>
 		      <span id="place-address"></span>
 		    </div>
 		</div>
 		<div class="mb-3">
 		  <label for="region-input" class="form-label">Region</label>
-		  <input id="region-input" class="form-control" value="${placesave.jpname }" type="text" placeholder="Please Write Place" readOnly>
+		  <input id="region-input" class="form-control" type="text" placeholder="Please Write Place" readOnly>
 		  <select class="form-select mt-2" name="place_select" aria-label="Region select">
-			<c:forEach items="${place }" var="p">
-			<option value="${p.pnum }">${p.jpname }</option>
+			<c:forEach items="${region }" var="r">
+			<option value="${r.value }" ${r.value=='OVERSEAS'? 'selected':'' }>${r.name }</option>
 			</c:forEach>
 		  </select>
-		  <input id="region-value" name="place" value="${placesave.place }" type="hidden">
+		  <input id="region-value" name="region" type="hidden">
 		  <script>
 		  	$('select').on('change', function() {
 				$('#region-input').val($('select option:selected').text());
@@ -226,7 +216,7 @@ function initPage() {
 		<div class="mb-3">
 		  <label for="addr-input" class="form-label">Address</label>
 		  <div class="position-relative">
-		    <input id="addr-input" class="form-control" name="addr" value="${placesave.addr }" type="text" readOnly placeholder="Please Write Place">
+		    <input id="addr-input" class="form-control" name="address" type="text" readOnly placeholder="Please Write Place">
 		    <div class="position-absolute top-50 end-0 translate-middle-y p-3">
 		      <svg id="addr-copy" role="button" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Copy" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-check" viewBox="0 0 16 16"><path d="M10.854 7.854a.5.5 0 0 0-.708-.708L7.5 9.793 6.354 8.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"/><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/></svg>		      
 		      <script>
@@ -287,17 +277,12 @@ function initPage() {
 		</div>
 		<div class="mb-3">
 		  <label for="memo-input" class="form-label">Memo</label>
-		  <textarea id="memo-input" class="form-control" name="memo" rows="5">${placesave.memo }</textarea>
+		  <textarea id="memo-input" class="form-control" name="memo" rows="5"></textarea>
 		</div>
 		<div class="mb-3 text-center">
   		  <div class="d-grid gap-2 d-md-block">
 		    <button id="form-submit" class="btn btn-primary" type="button">Save</button>
-		    <c:if test="${empty placesave }">
-		      <button class="btn btn-outline-danger" type="reset">Reset</button>
-		    </c:if>
-		    <c:if test="${!empty placesave }">
-		      <button class="btn btn-outline-secondary" type="button">Cancel</button>
-		    </c:if>
+		    <button class="btn btn-outline-danger" type="reset">Reset</button>
 		    <script>
 		    	$('.btn-outline-danger').on('click', () => {
 		    		map.setCenter({ lat: 38, lng: 133 });
@@ -306,24 +291,20 @@ function initPage() {
 		    		marker.setVisible(false); // 마커 초기화
 		    	});
 		    	
-		    	$('.btn-outline-secondary').on('click', () => {
-		    		history.back();
-		    	});
-		    	
 		    	$('#form-submit').on('click', () => {
+		    		
 		    		if($('#pac-input').val() == '' || $('#region-value').val() == '' || $('#addr-input').val() == '') {
 		    			window.alert('場所を入力してください');
 		    			return;
 		    		}
+		    		var queryString = $('form[name="form"]').serialize();
 		    		
-		    		var queryString = $('form[name="form"]').serialize() ;
-		    		var url = '${empty placesave? 'placeAdd.do':'placeUpdate.do'}';
 		    		$.ajax({
-		    			url: url,
+		    			url: 'placeAdd.do',
 		    			data: queryString,
 		    			method: 'POST',
 		    			success: function(data) {
-		    				if(data > 0) {
+		    				if(data == 'SUCCESS') {
 			    				$('#resultModalLabel').html('Complete!!');
 			    				$('#resultModalContent').html('新しい旅行プランが登録されました');
 			    				$('#resultModalButton').on('click', () => {

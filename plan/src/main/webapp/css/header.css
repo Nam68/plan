@@ -24,14 +24,14 @@
 
 .titleImg :hover {
 	cursor: pointer;
-}
-     
+} 
+
 header {
 	position: fixed;
 	top: 0;
 	width: 100%;
-	z-index: 5;
-}     
+	box-shadow: 5px 5px 10px 10px rgba(0,0,0,0.2);
+}
      
 .b-example-divider {
   height: 3rem;

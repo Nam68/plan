@@ -17,8 +17,8 @@ let infowindow;
 let infowindowContent;
 let marker;
 function initMap() {
-	var lat = ${empty placesave? 38:placesave.lat};
-	var lng = ${empty placesave? 133:placesave.lng};
+	var lat = 38;
+	var lng = 133;
 	
 	// 맵 초기화 코드
   	map = new google.maps.Map(document.getElementById("map"), {
@@ -159,21 +159,6 @@ function regionPicker(region) {
 	});
 }
 </script>
-
-<c:if test="${!empty placesave}"> <!-- placesave가 있으면 이 메서드를 실행 -->
-<script>
-function initPage() {
-	const myLatLng = { lat: ${placesave.lat}, lng: ${placesave.lng} };
-	map.setCenter(myLatLng);
-    map.setZoom(13);
-    marker.setPosition(myLatLng);
-    marker.setVisible(true);
-    infowindowContent.children["place-name"].textContent = '${placesave.name}';
-    infowindowContent.children["place-address"].textContent = '${placesave.addr}';
-    infowindow.open(map, marker);
-}
-</script>
-</c:if>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/header.jsp" %>

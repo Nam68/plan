@@ -48,8 +48,8 @@ public class AlbumController {
 	
 	@RequestMapping(value = "/album/albumContent.do")
 	@ResponseBody
-	public Album albumContent(Long index) {
-		return service.find(index);
+	public Album albumContent(@RequestParam("index") Album album) {
+		return album;
 	}
 	
 	@RequestMapping(value = "/album/albumAdd.do", method = RequestMethod.GET)

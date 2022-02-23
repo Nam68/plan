@@ -13,7 +13,7 @@ import plan.app.MyEnum.Region;
 public class Plan extends Item {
 	
 	@Embedded
-	private GeometryValue geomertry;
+	private GeometryValue geometry;
 	
 	private String address;
 	
@@ -24,12 +24,12 @@ public class Plan extends Item {
 		
 	}
 	
-	public GeometryValue getGeomertry() {
-		return geomertry;
+	public GeometryValue getGeometry() {
+		return geometry;
 	}
 
-	public void setGeomertry(GeometryValue geomertry) {
-		this.geomertry = geomertry;
+	public void setGeometry(GeometryValue geometry) {
+		this.geometry = geometry;
 	}
 
 	public String getAddress() {

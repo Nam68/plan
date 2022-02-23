@@ -13,6 +13,8 @@
 	http://www.springframework.org/schema/data/jpa
 	http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 	
+	<context:annotation-config/>
+	
 	<!-- 트랜잭션 어노테이션 활성화 -->
 	<tx:annotation-driven/>
 	

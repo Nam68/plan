@@ -12,13 +12,17 @@
 <link href="/plan/css/place.css" rel="stylesheet">
 <script>
 let map;
+let marker;
+let infoWindow;
 function initMap() {
 	// 맵 초기화 코드
   	map = new google.maps.Map(document.getElementById("map"), {
     	center: { lat: 38, lng: 133 },
     	zoom: 5,
     	mapTypeControl: false,
+    	disableDefaultUI: true,
   	});
+	
 }
 </script>
 </head>
@@ -61,12 +65,50 @@ function initMap() {
 	  		$.ajax({
 	  			url: 'placeContentFind.do',
 	  			data: {index: $(this).find('th').html()},
+	  			method: 'POST',
 	  			success: function(data) {
-	  				$('#contentModalLabel').html(data.title);
-	  				window.alert(JSON.stringify(data));
-	  				window.alert(JSON.stringify(data.geometry));
-	  				window.alert(data.geometry.lat);
-	  				//모달창 입력
+	  				/*
+	  					마커 관련
+	  				*/
+	  				//마커에 사용될 좌표
+	  				const latLng = { lat: data.geometry.lat, lng: data.geometry.lng };
+	  				//마커가 있으면 삭제
+	  				if(marker!=null) {
+	  					infoWindow.close();
+		  				marker.setVisible(false);
+	  				}
+	  				
+	  				//마커 작성
+	  				marker = new google.maps.Marker({
+	  				    map,
+	  				    position: latLng
+	  				  });
+	  				//마커 설명 작성
+	  				infoWindow = new google.maps.InfoWindow({
+		  			    content: data.title
+	  				  });
+
+	  				//마커 설명을 마커에 부착
+	  				infoWindow.open({
+	  			      anchor: marker,
+	  			      map,
+	  			      shouldFocus: false,
+	  			    });
+	  				//맵 이동
+	  				map.panTo(latLng);
+	  				map.setZoom(14);
+	  				
+	  				/*
+  						모달창 관련
+  					*/
+	  				$('.modal-title').html(data.title);
+	  				$('.modal-address').html(data.address);
+	  				$('.modal-country').html(data.region.country_jpn);
+	  				$('.modal-region').html(data.region.value_jpn);
+	  				$('.modal-date').html(new Date(data.registerDate).toLocaleDateString());
+	  				$('.modal-writer').html(data.member.name);
+	  				$('.modal-memo').html(data.memo);
+	  				$('#contentIndex').val(data.index);
 	  			}
 	  		})
 	  		.fail(function() {
@@ -99,18 +141,53 @@ function initMap() {
 
 <!-- Modal -->
 <div class="modal fade" id="contentModal" tabindex="-1" aria-labelledby="contentModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="contentModalLabel">Modal title</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        ...
+      <div class="modal-body container">
+        <div class="row">
+          <div class="col-sm modal-body-col">
+	        <div id="map"></div>
+	      </div>
+	      <div class="col-sm-6 modal-body-col">
+		    <div class="h4 text-bold modal-title">title</div>
+		    <div class="h6 modal-address">address</div>
+		    <hr>
+		    <div class="row">
+		      <div class="col">Country : <span class="modal-country"></span></div>
+		      <div class="col">City : <span class="modal-region"></span></div>
+		    </div>
+		    <div>Reporting Date : <span class="modal-date"></span></div>
+		    <div>Writer : <span class="modal-writer"></span></div>
+		    <hr>
+		    <div class="modal-memo">memo</div>
+		    <hr>
+	      </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <c:if test="${sessionScope.member.roleType == 'ADMIN' }">
+        <button type="button" class="btn btn-danger">Delete</button>
+        <button type="button" class="btn btn-outline-success">Change</button>
+        <form id="contentForm" method="post">
+          <input id="contentIndex" name="index" type="hidden" value="#">
+        </form>
+        <script>
+        	$('.btn-danger').on('click', function() {
+        		var form = $('#contentForm');
+        		form.attr('action', 'placeDelete.do');
+        		form.submit();
+        	});        	
+        	$('.btn-outline-success').on('click', function() {
+        		var form = $('#contentForm');
+        		form.attr('action', 'placeUpdatePage.do');
+        		form.submit();
+        	});
+        </script>
+        </c:if>
       </div>
     </div>
   </div>

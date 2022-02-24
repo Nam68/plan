@@ -80,16 +80,33 @@ public class MyEnum {
 			return value_eng;
 		}
 		
-		public static List<Map<String, String>> getJsonList() {
+		public static List<Map<String, String>> getMapData() {
 			Region[] enums = Region.values();
-			List<Map<String, String>> regionList = new ArrayList<Map<String, String>>();
+			List<Map<String, String>> result = new ArrayList<Map<String, String>>();
 			for(Region region : enums) {
-				Map<String, String> map = new HashMap<String, String>();
-				map.put("name", region.getValue_jpn());
-				map.put("value", region.toString());
-				regionList.add(map);
+				Map<String, String> data = new HashMap<String, String>();
+				data.put("index", region.getIndex()+"");
+				data.put("value", region.toString());
+				data.put("value_jpn", region.getValue_jpn());
+				data.put("value_kor", region.getValue_kor());
+				data.put("value_eng", region.getValue_eng());
+				data.put("country", region.getCountry().toString());
+				data.put("country_jpn", region.getCountry().getValue());
+				data.put("country_index", region.getCountry().getIndex()+"");
+				
+				result.add(data);
 			}
-			return regionList;
+			return result;
+		}
+		
+		public static Map<String, String> getMapData(Region region) {
+			Map<String, String> result = null;
+			for(Map<String, String> data : Region.getMapData()) {
+				if(Integer.parseInt(data.get("index")) == region.getIndex()) {
+					result = data;
+				}
+			}
+			return result;
 		}
 		
 	}

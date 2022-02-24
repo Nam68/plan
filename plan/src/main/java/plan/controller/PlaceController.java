@@ -21,6 +21,7 @@ import plan.domain.item.GeometryValue;
 import plan.domain.item.Item;
 import plan.domain.item.Plan;
 import plan.domain.member.Member;
+import plan.model.vo.GlobalVO;
 import plan.service.PlaceService;
 
 @Controller
@@ -43,7 +44,7 @@ public class PlaceController {
 		ModelAndView mav = new ModelAndView();
 		if(auth.isAdmin(session, mav) && member != null) {
 			mav.setViewName("trip/place/registerPlace");
-			mav.addObject("region", Region.getJsonList());
+			mav.addObject("regions", Region.getMapData());
 		}
 		
 		return mav;
@@ -85,10 +86,26 @@ public class PlaceController {
 		return mav;
 	} 
 	
-	@RequestMapping("/trip/place/placeContentFind.do")
+	@RequestMapping(value = "/trip/place/placeContentFind.do", method = RequestMethod.POST)
 	@ResponseBody
 	public Plan placeContentFind(@RequestParam("index") Plan plan) {
 		return plan;
+	}
+	
+	@RequestMapping(value = "/trip/place/placeDelete.do", method = RequestMethod.POST)
+	public ModelAndView placeDelete(@RequestParam("index") Plan plan) {
+		ModelAndView mav = new ModelAndView();
+		service.delete(plan);
+		mav.addObject("vo", new GlobalVO("削除されました", "/plan/trip/place/placeList.do"));
+		mav.setViewName("global");
+		return mav;
+	}
+	
+	@RequestMapping(value = "/trip/place/placeUpdatePage.do", method = RequestMethod.POST)
+	public String placeUpdatePage(@RequestParam("index") Plan plan, Model model) {
+		model.addAttribute("place", plan);
+		model.addAttribute("regions", Region.getMapData());
+		return "trip/place/placeUpdate";
 	}
 	
 }

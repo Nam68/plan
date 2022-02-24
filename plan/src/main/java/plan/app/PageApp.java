@@ -54,6 +54,7 @@ public class PageApp {
 		long allPage = getAllPage(count, contentsSize);
 		long startPage = getStartPage(page, pageSize);
 		long endPage = getEndPage(page, pageSize, allPage);
+		String active = "";
 		
 		StringBuffer sb = new StringBuffer();
 		
@@ -72,7 +73,12 @@ public class PageApp {
 	      
 		//숫자로 된 페이지네이션 코드
 		for(long i = startPage; i <= endPage; i++) {
-		sb.append("<li class=\"page-item\"><a class=\"page-link\" href=\""+url+"?page="+i+"\">"+i+"</a></li>");
+			if(page == i) {
+				active = " active";
+			} else {
+				active = "";
+			}
+		sb.append("<li class=\"page-item"+active+"\"><a class=\"page-link\" href=\""+url+"?page="+i+"\">"+i+"</a></li>");
 		}
 		
 		//다음 페이지네이션

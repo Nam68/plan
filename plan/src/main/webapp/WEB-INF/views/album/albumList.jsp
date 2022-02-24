@@ -105,7 +105,7 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
         <div class="card shadow-sm overflow-hidden position-relative" role="button" data-bs-toggle="modal" data-bs-target="#albumContentModal">
           <span><input type="hidden" value="${list.index }"></span>
           <span class="w-100 text-center text-white fs-4 fw-bold title">${list.title }</span>
-          <span class="w-100 text-center text-white fs-5 city">${list.region }</span>
+          <span class="w-100 text-center text-white fs-5 city">${list.region.value_jpn }</span>
           <span class="w-100 text-center text-white fs-6 startdate">${list.startDate }~${list.endDate }</span>
           <div class="scale">
           	<img class="bd-placeholder-img card-img-top" alt="" src="${empty list.images? 'http://myyk.co.kr/img/noimage.jpg':list.images[0].path }"/>		
@@ -126,7 +126,7 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
       				*	출력
       				*/
       				$('#albumContentModalLabel').html(data.title); //타이틀
-      				$('#albumContentRegion').html(data.region); //장소
+      				$('#albumContentRegion').html(data.region.value_jpn); //장소
       				$('#albumContentWriter').html(data.member.name); //작성자
       				$('#albumContentStartdate').html(new Date(data.startDate).toLocaleDateString()); //출발일
       				$('#albumContentEnddate').html(new Date(data.endDate).toLocaleDateString()); //도착일
@@ -371,7 +371,7 @@ function albumEmptyImgCode() { //컨텐츠에 이미지가 없는 경우 빈 이
 				<select id="albumAddRegion" class="form-select" aria-label="Default select example">			    	
 					<option value="" selected>Select City...</option>
 					<c:forEach items="${regions }" var="r">
-					<option value="${r.value }">${r.name }</option>
+					<option value="${r.value }">${r.value_jpn }</option>
 					</c:forEach>
 				</select>
 			</div>

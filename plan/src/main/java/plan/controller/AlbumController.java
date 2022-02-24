@@ -37,7 +37,7 @@ public class AlbumController {
 		session.setAttribute("header", "album");
 		
 		//지역 전체를 넘겨주는 코드
-		model.addAttribute("regions", Region.getJsonList());
+		model.addAttribute("regions", Region.getMapData());
 		
 		model.addAttribute("page", page);
 		model.addAttribute("list", service.findAllWithPage(page));
@@ -59,7 +59,7 @@ public class AlbumController {
 		
 		if(auth.isAdmin(session, mav) && member != null) {
 			mav.setViewName("album/albumAdd");
-			mav.addObject("regions", Region.getJsonList());
+			mav.addObject("regions", Region.getMapData());
 			service.tempAlbumImageDelete(member.getId()); //임시폴더에 있을지도 모르는 파일들 삭제
 		}
 		return mav;
@@ -101,7 +101,7 @@ public class AlbumController {
 	@RequestMapping(value = "/album/albumUpdate.do", method = RequestMethod.POST)
 	public String albumUpdate(Long index, Model model) {
 		model.addAttribute("album", service.find(index));
-		model.addAttribute("regions", Region.getJsonList());
+		model.addAttribute("regions", Region.getMapData());
 		return "album/albumUpdate";
 	}
 	

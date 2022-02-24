@@ -1,5 +1,8 @@
 package plan.domain.item;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -40,8 +43,8 @@ public class Plan extends Item {
 		this.address = address;
 	}
 
-	public Region getRegion() {
-		return region;
+	public Map<String, String> getRegion() {
+		return Region.getMapData(region);
 	}
 
 	public void setRegion(Region region) {

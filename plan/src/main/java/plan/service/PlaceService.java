@@ -60,8 +60,13 @@ public class PlaceService {
 		return ErrorJudgment.SUCCESS;
 	}
 	
+	@Transactional
+	public void delete(Plan plan) {
+		repository.delete(plan);
+	}
+	
 	/**
-	 * 페이징된 저장 장소 반환
+	 * 페이징된 장소 반환
 	 */
 	public List<Plan> findAllWithPage(int page) {
 		//페이지 시작이 0페이지부터이므로 1부터 시작으로 계산된 page 변수에서 1을 뺌

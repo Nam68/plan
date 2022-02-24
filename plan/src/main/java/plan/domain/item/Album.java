@@ -2,6 +2,7 @@ package plan.domain.item;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
@@ -54,8 +55,8 @@ public class Album extends Item {
 		this.endDate = endDate;
 	}
 
-	public String getRegion() {
-		return region.getValue_jpn();
+	public Map<String, String> getRegion() {
+		return Region.getMapData(region);
 	}
 
 	public void setRegion(Region region) {

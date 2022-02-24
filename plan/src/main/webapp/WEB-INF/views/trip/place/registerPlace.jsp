@@ -182,8 +182,8 @@ function regionPicker(region) {
 		  <label for="region-input" class="form-label">Region</label>
 		  <input id="region-input" class="form-control" type="text" placeholder="Please Write Place" readOnly>
 		  <select class="form-select mt-2" name="place_select" aria-label="Region select">
-			<c:forEach items="${region }" var="r">
-			<option value="${r.value }" ${r.value=='OVERSEAS'? 'selected':'' }>${r.name }</option>
+			<c:forEach items="${regions }" var="r">
+			<option value="${r.value }" ${r.value=='OVERSEAS'? 'selected':'' }>${r.value_jpn }</option>
 			</c:forEach>
 		  </select>
 		  <input id="region-value" name="region" type="hidden">

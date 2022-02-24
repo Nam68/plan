@@ -89,7 +89,7 @@
 		      		  <span>
 		      		    <select id="albumContentRegion" name="region">
 		      		  	  <c:forEach items="${regions }" var="r">
-		      		  	    <option value="${r.value }">${r.name }</option>
+		      		  	    <option value="${r.value }">${r.value_jpn }</option>
 		      		  	  </c:forEach>
 		      		  	</select>  
 		      		  </span>

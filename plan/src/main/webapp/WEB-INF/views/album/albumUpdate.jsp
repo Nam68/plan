@@ -102,7 +102,7 @@ function initPage() {
 		      		  <span>
 		      		    <select id="albumContentRegion" name="region">
 		      		  	  <c:forEach items="${regions }" var="r">
-		      		  	    <option value="${r.value }" ${album.region==r.name? 'selected':'' }>${r.name }</option>
+		      		  	    <option value="${r.value }" ${album.region.value == r.value? 'selected':'' }>${r.value_jpn }</option>
 		      		  	  </c:forEach>
 		      		  	</select>  
 		      		  </span>

@@ -80,6 +80,7 @@ public class PlaceController {
 		if(auth.isAdmin(session, mav) && member != null) {
 			mav.setViewName("trip/place/placeList");
 			mav.addObject("page", service.pageCode(page));
+			mav.addObject("regions", Region.getMapData());
 			mav.addObject("placesave", service.findAllWithPage(page));
 		}
 		

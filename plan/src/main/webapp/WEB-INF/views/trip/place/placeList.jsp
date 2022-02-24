@@ -140,6 +140,8 @@ function initMap() {
 </section>
 
 <!-- Modal -->
+<form id="contentForm" method="post">
+<input id="contentIndex" name="index" type="hidden" value="#">
 <div class="modal fade" id="contentModal" tabindex="-1" aria-labelledby="contentModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
@@ -152,15 +154,31 @@ function initMap() {
 	        <div id="map"></div>
 	      </div>
 	      <div class="col-sm-6 modal-body-col">
-		    <div class="h4 text-bold modal-title">title</div>
-		    <div class="h6 modal-address">address</div>
+		    <div class="h4 text-bold">
+		      <span class="modal-title">title</span>
+		    </div>
+		    <div>
+		      <span class="h6 modal-address">address</span>
+		    </div>
 		    <hr>
 		    <div class="row">
-		      <div class="col">Country : <span class="modal-country"></span></div>
-		      <div class="col">City : <span class="modal-region"></span></div>
+		      <div class="col-auto">
+		        <span>Country :&nbsp;</span>
+		        <span class="modal-country">country</span>
+		      </div>
+		      <div class="col-auto">
+		        <span>City :&nbsp;</span>
+		        <span class="modal-region">city</span>
+		      </div>
 		    </div>
-		    <div>Reporting Date : <span class="modal-date"></span></div>
-		    <div>Writer : <span class="modal-writer"></span></div>
+		    <div>
+		      <span>Reporting Date :&nbsp;</span>
+		      <span class="modal-date">date</span>
+		    </div>
+		    <div>
+		      <span>Writer :&nbsp;</span>
+		      <span class="modal-writer">writer</span>
+		    </div>
 		    <hr>
 		    <div class="modal-memo">memo</div>
 		    <hr>
@@ -172,9 +190,7 @@ function initMap() {
         <c:if test="${sessionScope.member.roleType == 'ADMIN' }">
         <button type="button" class="btn btn-danger">Delete</button>
         <button type="button" class="btn btn-outline-success">Change</button>
-        <form id="contentForm" method="post">
-          <input id="contentIndex" name="index" type="hidden" value="#">
-        </form>
+        <button type="button" class="btn btn-success d-none">Complete</button>
         <script>
         	$('.btn-danger').on('click', function() {
         		var form = $('#contentForm');
@@ -182,9 +198,23 @@ function initMap() {
         		form.submit();
         	});        	
         	$('.btn-outline-success').on('click', function() {
+        		$('.modal-title').html('<input type="text" class="form-control" name="title">');
+  				$('.modal-region').html('<select name="region"><c:forEach items="${regions }" var="r"><option value=${r.value }>${r.value_jpn }</option></c:forEach></select>');
+  				$('.modal-memo').html('<textarea name="memo" cols="45" rows="4"></textarea>');
+  				$('.modal-date').html(new Date(Date.now()).toLocaleDateString());
+  				$('.modal-writer').html('${sessionScope.member.name}');
+  				
+  				$('.btn-success').removeClass('d-none');
+  				$(this).addClass('d-none');
+        	});
+        	$('.btn-success').on('click', function() {
         		var form = $('#contentForm');
-        		form.attr('action', 'placeUpdatePage.do');
+        		form.attr('action', 'placeUpdate.do');
         		form.submit();
+        	});
+        	$('.modal').on('hidden.bs.modal', function() {
+        		$('.btn-success').addClass('d-none');
+        		$('.btn-outline-success').removeClass('d-none');
         	});
         </script>
         </c:if>
@@ -192,6 +222,7 @@ function initMap() {
     </div>
   </div>
 </div>
+</form>
 <%@ include file="/WEB-INF/views/footer.jsp" %>
 <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPg6sDuTdTWAWj17NeU9JkTVNEs3gJfIU&libraries=places&callback=initMap&v=weekly&region=kr"></script>
 </body>

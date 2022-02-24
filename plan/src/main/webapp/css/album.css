@@ -58,6 +58,9 @@
 		margin-bottom: 10%;
 	}
 }
+#albumInfo {
+	font-size: 2vh;
+} 
 
 
 /*albumAdd 삭제*/

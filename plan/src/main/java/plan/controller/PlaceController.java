@@ -94,19 +94,18 @@ public class PlaceController {
 	}
 	
 	@RequestMapping(value = "/trip/place/placeDelete.do", method = RequestMethod.POST)
-	public ModelAndView placeDelete(@RequestParam("index") Plan plan) {
-		ModelAndView mav = new ModelAndView();
+	public String placeDelete(@RequestParam("index") Plan plan, Model model) {
 		service.delete(plan);
-		mav.addObject("vo", new GlobalVO("削除されました", "/plan/trip/place/placeList.do"));
-		mav.setViewName("global");
-		return mav;
+		model.addAttribute("vo", new GlobalVO("削除されました", "/plan/trip/place/placeList.do"));
+		return "global";
 	}
 	
-	@RequestMapping(value = "/trip/place/placeUpdatePage.do", method = RequestMethod.POST)
-	public String placeUpdatePage(@RequestParam("index") Plan plan, Model model) {
-		model.addAttribute("place", plan);
-		model.addAttribute("regions", Region.getMapData());
-		return "trip/place/placeUpdate";
+	@RequestMapping(value = "/trip/place/placeUpdate.do", method = RequestMethod.POST)
+	public String placeUpdate(@RequestParam("index") Plan plan, Plan newPlan, HttpSession session, Model model) {
+		Member member = (Member) session.getAttribute("member");
+		service.update(plan, newPlan, member);
+		model.addAttribute("vo", new GlobalVO("変更されました", "/plan/trip/place/placeList.do"));
+		return "global";
 	}
 	
 }

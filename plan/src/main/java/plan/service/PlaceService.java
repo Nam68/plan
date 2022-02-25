@@ -1,5 +1,6 @@
 package plan.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,17 @@ public class PlaceService {
 	@Transactional
 	public void delete(Plan plan) {
 		repository.delete(plan);
+	}
+	
+	@Transactional
+	public void update(Plan plan, Plan newPlan, Member member) {
+		plan.setTitle(newPlan.getTitle());
+		plan.setRegion(newPlan.getRegionEnum());
+		plan.setMemo(newPlan.getMemo());
+		plan.setRegisterDate(new Date(System.currentTimeMillis()));
+		plan.setMember(member);
+		
+		repository.save(plan);
 	}
 	
 	/**

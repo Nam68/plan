@@ -104,6 +104,7 @@ function initMap() {
 	  				$('.modal-title').html(data.title);
 	  				$('.modal-address').html(data.address);
 	  				$('.modal-country').html(data.region.country_jpn);
+	  				$('#modal-region-value').val(data.region.value);
 	  				$('.modal-region').html(data.region.value_jpn);
 	  				$('.modal-date').html(new Date(data.registerDate).toLocaleDateString());
 	  				$('.modal-writer').html(data.member.name);
@@ -169,6 +170,7 @@ function initMap() {
 		      <div class="col-auto">
 		        <span>City :&nbsp;</span>
 		        <span class="modal-region">city</span>
+		   		<input type="hidden" id="modal-region-value" value="REGION">
 		      </div>
 		    </div>
 		    <div>
@@ -198,22 +200,34 @@ function initMap() {
         		form.submit();
         	});        	
         	$('.btn-outline-success').on('click', function() {
-        		$('.modal-title').html('<input type="text" class="form-control" name="title">');
+        		//모달창에 인풋 입력
+        		$('.modal-title').html('<input type="text" class="form-control" name="title" value="'+$('.modal-title').html()+'">');
   				$('.modal-region').html('<select name="region"><c:forEach items="${regions }" var="r"><option value=${r.value }>${r.value_jpn }</option></c:forEach></select>');
-  				$('.modal-memo').html('<textarea name="memo" cols="45" rows="4"></textarea>');
+  				$('.modal-memo').html('<textarea name="memo" cols="45" rows="4">'+$('.modal-memo').html()+'</textarea>');
   				$('.modal-date').html(new Date(Date.now()).toLocaleDateString());
   				$('.modal-writer').html('${sessionScope.member.name}');
   				
+  				//지역 셀렉트에 컨텐츠의 정보를 입력
+  				var selectedRegion = $('#modal-region-value').val();
+  				$('select[name="region"]').val(selectedRegion).prop('selected', true);
+  				
+  				//업데이트 확인 버튼 보임
   				$('.btn-success').removeClass('d-none');
+  				//업데이트 전환 버튼 숨김
   				$(this).addClass('d-none');
         	});
         	$('.btn-success').on('click', function() {
         		var form = $('#contentForm');
         		form.attr('action', 'placeUpdate.do');
+        		
+        		//업데이트 구현
         		form.submit();
         	});
+        	//모달창이 닫힐 때
         	$('.modal').on('hidden.bs.modal', function() {
+        		//업데이트 전환 버튼 보임
         		$('.btn-success').addClass('d-none');
+        		//업데이트 확인 버튼 숨김
         		$('.btn-outline-success').removeClass('d-none');
         	});
         </script>

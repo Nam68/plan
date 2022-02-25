@@ -46,6 +46,10 @@ public class Plan extends Item {
 	public Map<String, String> getRegion() {
 		return Region.getMapData(region);
 	}
+	
+	public Region getRegionEnum() {
+		return region;
+	}
 
 	public void setRegion(Region region) {
 		this.region = region;

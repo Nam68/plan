@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import plan.app.AuthenticationApp;
 import plan.app.MyEnum.ErrorJudgment;
+import plan.app.MyEnum.HeaderIcon;
 import plan.app.MyEnum.Region;
 import plan.domain.item.Album;
 import plan.domain.member.Member;
@@ -34,7 +35,7 @@ public class AlbumController {
 	
 	@RequestMapping("/album/albumList.do")
 	public String albumList(HttpSession session, Model model, @RequestParam(defaultValue = "1")int page) {
-		session.setAttribute("header", "album");
+		session.setAttribute("header", HeaderIcon.ALBUM);
 		
 		//지역 전체를 넘겨주는 코드
 		model.addAttribute("regions", Region.getMapData());

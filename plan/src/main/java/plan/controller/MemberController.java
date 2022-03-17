@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import plan.app.MyEnum.ErrorJudgment;
+import plan.app.MyEnum.HeaderIcon;
 import plan.domain.member.Member;
 import plan.service.MemberService;
 
@@ -22,7 +23,7 @@ public class MemberController {
 	
 	@RequestMapping("/signin.do")
 	public String signin(HttpSession session) {
-		session.setAttribute("header", "member");
+		session.setAttribute("header", HeaderIcon.MEMBER);
 		return "user/signin";
 	}	
 	

@@ -9,6 +9,10 @@ import plan.app.MyEnum.Region;
 
 public class MyEnum {
 	
+	public enum HeaderIcon {
+		HOME, ALBUM, TRIP, REQUEST, MEMBER
+	}
+	
 	public enum ErrorJudgment {
 		SUCCESS("1"), ERROR("0");
 		private String value;
@@ -111,7 +115,7 @@ public class MyEnum {
 		
 	}
 	
-	private enum Country {
+	public enum Country {
 		KOREA("韓国", 1), JAPAN("日本", 2), OVERSEAS("海外", 3);
 		
 		private int index;
@@ -128,6 +132,21 @@ public class MyEnum {
 		
 		public String getValue() {
 			return value;
+		}
+		
+		public static List<Map<String, String>> getMapData() {
+			Country[] enums = Country.values();
+			List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+			for(Country country : enums) {
+				Map<String, String> map = new HashMap<String, String>();
+				map.put("index", country.getIndex()+"");
+				map.put("value_jpn", country.getValue());
+				map.put("value_eng", country.toString());
+				
+				result.add(map);
+			}
+			
+			return result;
 		}
 	}
 	

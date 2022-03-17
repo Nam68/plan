@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import plan.app.AuthenticationApp;
 import plan.app.MyEnum.ErrorJudgment;
+import plan.app.MyEnum.HeaderIcon;
 import plan.app.MyEnum.Region;
 import plan.domain.item.GeometryValue;
 import plan.domain.item.Item;
@@ -38,7 +39,7 @@ public class PlaceController {
 	 */
 	@RequestMapping(value = "/trip/place/registerPlace.do", method = RequestMethod.GET)
 	public ModelAndView registerPlace(HttpSession session) {
-		session.setAttribute("header", "trip");
+		session.setAttribute("header", HeaderIcon.TRIP);
 		Member member = (Member) session.getAttribute("member");
 		
 		ModelAndView mav = new ModelAndView();
@@ -73,7 +74,7 @@ public class PlaceController {
 	 */
 	@RequestMapping(value = "/trip/place/placeList.do", method = RequestMethod.GET)
 	public ModelAndView placeList(HttpSession session, @RequestParam(defaultValue = "1")int page) {
-		session.setAttribute("header", "trip");
+		session.setAttribute("header", HeaderIcon.TRIP);
 		Member member = (Member) session.getAttribute("member");
 		
 		ModelAndView mav = new ModelAndView();

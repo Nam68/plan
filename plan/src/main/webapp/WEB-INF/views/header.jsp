@@ -34,7 +34,7 @@
 </svg>
 
 <!-- 헤더 시작위치 -->
-<header style="z-index: 1005;">
+<header style="z-index: 100005;">
   <div class="px-3 py-2 bg-dark text-white">
     <div class="container">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
@@ -45,19 +45,19 @@
 
         <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0 text-small">
           <li>
-            <a href="/plan/index.do" class="nav-link ${sessionScope.header == 'home'? 'text-primary':'text-white' }">
+            <a href="/plan/index.do" class="nav-link ${sessionScope.header == 'HOME'? 'text-primary':'text-white' }">
               <svg class="bi d-block mx-auto mb-1" width="24" height="24"><use xlink:href="#home"/></svg>
               Home
             </a>
           </li>
           <li>
-            <a href="/plan/album/albumList.do" class="nav-link ${sessionScope.header == 'album'? 'text-primary':'text-white' }">
+            <a href="/plan/album/albumList.do" class="nav-link ${sessionScope.header == 'ALBUM'? 'text-primary':'text-white' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-journals d-block mx-auto mb-1"><use xlink:href="#album"/></svg>
               Memory
             </a>
           </li>
           <li class="dropdown">
-            <a href="#" class="nav-link ${sessionScope.header == 'trip'? 'text-primary':'text-white' } dropdown-toggle" id="dropdownTripMenu" data-bs-toggle="dropdown" aria-expanded="false">
+            <a href="#" class="nav-link ${sessionScope.header == 'TRIP'? 'text-primary':'text-white' } dropdown-toggle" id="dropdownTripMenu" data-bs-toggle="dropdown" aria-expanded="false">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-journals d-block mx-auto mb-1"><use xlink:href="#trip"/></svg>
               Trip
             </a>
@@ -65,18 +65,18 @@
 		      <li><a class="dropdown-item" href="/plan/trip/place/registerPlace.do">Register Place</a></li>
 		      <li><a class="dropdown-item" href="/plan/trip/place/placeList.do">Place List</a></li>
 		      <li><hr class="dropdown-divider"></li>
-		      <li><a class="dropdown-item" href="/plan/#">Register Trip Plan</a></li>
-		      <li><a class="dropdown-item" href="/plan/#">Trip Plan List</a></li>
+		      <li><a class="dropdown-item" href="/plan/trip/plan/registerTripPlan.do">Register Trip Plan</a></li>
+		      <li><a class="dropdown-item" href="/plan/trip/plan/tripPlanList.do">Trip Plan List</a></li>
 		    </ul>
           </li>
           <li>
-            <a href="#" class="nav-link ${sessionScope.header == 'request'? 'text-primary':'text-white' }">
+            <a href="#" class="nav-link ${sessionScope.header == 'REQUEST'? 'text-primary':'text-white' }">
               <svg class="bi d-block mx-auto mb-1" width="24" height="24"><use xlink:href="#request"/></svg>
               Request
             </a>
           </li>
           <li>
-            <a href="#" class="nav-link ${sessionScope.header == 'member'? 'text-primary':'text-white' }">
+            <a href="#" class="nav-link ${sessionScope.header == 'MEMBER'? 'text-primary':'text-white' }">
               <svg class="bi d-block mx-auto mb-1" width="24" height="24"><use xlink:href="#people-circle"/></svg>
               User Menu
             </a>
@@ -150,7 +150,7 @@ window.onload = function() {
 	}
 	
 	// Home인 경우 스크롤 취소
-	<c:if test="${sessionScope.header=='home'}">return;</c:if>
+	<c:if test="${sessionScope.header=='HOME'}">return;</c:if>
 	
 	// 스크롤이 필요 없는 경우 스크롤 취소
 	<c:if test="${!empty scroll_cancel}">return;</c:if>

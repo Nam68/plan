@@ -9,6 +9,8 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import plan.app.MyEnum.HeaderIcon;
+
 @Controller
 public class IndexController {
 	
@@ -20,7 +22,7 @@ public class IndexController {
 		DecimalFormat df = new DecimalFormat("###,###");
 		session.setAttribute("period", df.format(period/1000/60/60/24));
 		
-		session.setAttribute("header", "home");
+		session.setAttribute("header", HeaderIcon.HOME);
 		
 		return "index";
 	}

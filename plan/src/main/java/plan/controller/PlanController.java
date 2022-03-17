@@ -13,6 +13,7 @@ import plan.app.MyEnum.Country;
 import plan.app.MyEnum.HeaderIcon;
 import plan.app.MyEnum.Region;
 import plan.domain.member.Member;
+import plan.service.PlaceService;
 
 @Controller
 public class PlanController {
@@ -20,7 +21,8 @@ public class PlanController {
 	@Autowired
 	private AuthenticationApp auth;
 	
-	
+	@Autowired
+	private PlaceService placeService;
 	
 	/*
 	 * 플랜 등록 관련
@@ -35,7 +37,7 @@ public class PlanController {
 			mav.setViewName("trip/plan/registerTripPlan");
 			mav.addObject("countries", Country.getMapData());
 			mav.addObject("regions", Region.getMapData());
-			
+			mav.addObject("places", placeService.find());
 		}
 		
 		return mav;

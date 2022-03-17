@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,6 +25,9 @@
     <h1 class="display-5 fw-bold mb-5">Register Plan</h1>
     <hr> 
     <div class="px-5 mt-5 mx-auto row">
+      <!-- 
+      	날짜 입력
+       -->
       <div class="container">
         <div class="row">
           <div class="col-sm-5 text-start">
@@ -73,19 +78,17 @@
           </div>
         </div>
       </div>
-      
+      <!-- 
+      	일수가 출력되는 곳
+       -->
       <div class="container mt-5">
-      
-<nav id="navbar-date" class="navbar navbar-light collapse">
-  <ul class="nav nav-pills gap-1"></ul>
-</nav>      
-      
+		<nav id="navbar-date" class="navbar navbar-light collapse">
+		  <ul class="nav nav-pills gap-1"></ul>
+		</nav>   
       </div>
-      
-      
-      
-      
-      
+      <!-- 
+      	장소 정보 검색
+       -->
 	  <div id="placeContainer" class="container collapse2 form-control">
 	    <div class="row mb-4">
 	      <div class="col-sm text-start">
@@ -108,25 +111,49 @@
 	      <div class="col-sm">
 		    <label for="countrySelect" class="form-label fw-bold">Country</label>
 		    <select class="form-select" id="countrySelect">
-		      <option>Choose...</option>
-		      <option>...</option>
+		      <c:forEach items="${countries }" var="c">
+		        <option value="${c.value_eng }">${c.value_jpn }</option>
+		      </c:forEach>
 		    </select>
 	      </div>
 	      <div class="col-sm">
 	        <label for="citySelect" class="form-label fw-bold">City</label>
-		    <select class="form-select" id="citySelect" disabled="disabled">
-		      <option>Choose the country</option>
+		    <select class="form-select" id="citySelect">
+		      <c:forEach items="${regions }" var="r">
+		        <c:if test="${r.country_index==1 }">
+		        <option value="${r.value }">${r.value_jpn }</option>
+		        </c:if>
+		      </c:forEach>
 		    </select>
 		  </div>
+		  <script>
+		  	/*
+		  	*	국가를 변경할 때
+		  	*/
+		  	$('#countrySelect').on('change', function() {
+		  		//ajax로 ㄱㄱ
+		  	});
+		  	
+		  	/*
+		  	*	도시를 변경할 때
+		  	*/
+		  	$('#citySelect').on('change', function() {
+		  		
+		  	});
+		  </script>
 	    </div>
 	    <div class="row text-start">
 	      <div class="col-sm">
 		    <label for="placeSelect" class="form-label fw-bold">Place</label>
-			<div class="form-control bg-secondary bg-opacity-10" id="placeSelect" style="height: 16vh; overflow: scroll;">
-			  <div class="placeUnit2" role="button2">
-				<label>Choose the country or city</label>
-				<input class="placeCheckbox" type="checkbox" value="nothing">
-			  </div>
+			<div class="form-control" id="placeSelect" style="height: 16vh; overflow: scroll;">
+			  <c:forEach items="${places }" var="p">
+			    <c:if test="${p.region.index == 1 }">
+			    <div class="placeUnit" role="button">
+			  	  <label>${p.title }</label>
+				  <input class="placeCheckbox" type="checkbox" value="${p.index }">
+			    </div>
+				</c:if>
+			  </c:forEach>
 			</div>
 			<script>
 			  	$('.placeUnit').on('click', function() {

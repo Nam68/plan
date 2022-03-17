@@ -20,7 +20,7 @@ import plan.app.MyEnum.HeaderIcon;
 import plan.app.MyEnum.Region;
 import plan.domain.item.GeometryValue;
 import plan.domain.item.Item;
-import plan.domain.item.Plan;
+import plan.domain.item.Place;
 import plan.domain.member.Member;
 import plan.model.vo.GlobalVO;
 import plan.service.PlaceService;
@@ -63,9 +63,9 @@ public class PlaceController {
 	
 	@RequestMapping(value = "/trip/place/placeAdd.do", method = RequestMethod.POST)
 	@ResponseBody
-	public ErrorJudgment placeAdd(Plan plan, String lat, String lng, HttpSession session) {
-		plan.setGeometry(new GeometryValue(Double.parseDouble(lat), Double.parseDouble(lng)));
-		return service.save(plan, (Member) session.getAttribute("member"));
+	public ErrorJudgment placeAdd(Place place, String lat, String lng, HttpSession session) {
+		place.setGeometry(new GeometryValue(Double.parseDouble(lat), Double.parseDouble(lng)));
+		return service.save(place, (Member) session.getAttribute("member"));
 	}
 	
 	
@@ -90,21 +90,21 @@ public class PlaceController {
 	
 	@RequestMapping(value = "/trip/place/placeContentFind.do", method = RequestMethod.POST)
 	@ResponseBody
-	public Plan placeContentFind(@RequestParam("index") Plan plan) {
-		return plan;
+	public Place placeContentFind(@RequestParam("index") Place place) {
+		return place;
 	}
 	
 	@RequestMapping(value = "/trip/place/placeDelete.do", method = RequestMethod.POST)
-	public String placeDelete(@RequestParam("index") Plan plan, Model model) {
-		service.delete(plan);
+	public String placeDelete(@RequestParam("index") Place place, Model model) {
+		service.delete(place);
 		model.addAttribute("vo", new GlobalVO("削除されました", "/plan/trip/place/placeList.do"));
 		return "global";
 	}
 	
 	@RequestMapping(value = "/trip/place/placeUpdate.do", method = RequestMethod.POST)
-	public String placeUpdate(@RequestParam("index") Plan plan, Plan newPlan, HttpSession session, Model model) {
+	public String placeUpdate(@RequestParam("index") Place place, Place newPlace, HttpSession session, Model model) {
 		Member member = (Member) session.getAttribute("member");
-		service.update(plan, newPlan, member);
+		service.update(place, newPlace, member);
 		model.addAttribute("vo", new GlobalVO("変更されました", "/plan/trip/place/placeList.do"));
 		return "global";
 	}

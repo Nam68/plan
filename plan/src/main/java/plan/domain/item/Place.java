@@ -12,7 +12,7 @@ import plan.app.MyEnum.Region;
 
 @Entity
 @DiscriminatorValue("P")
-public class Place {
+public class Place extends Item {
 	
 	@Embedded
 	private GeometryValue geometry;
